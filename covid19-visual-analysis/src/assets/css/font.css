@@ -1,0 +1,18 @@
+@font-face {  
+    font-family: 'zcool';  
+    src: url('./zcool.TTF');  
+    font-weight: normal;  
+    font-style: normal;  
+ }
+ @font-face {  
+    font-family: 'zcool_title';  
+    src: url('./zcool_title.TTF');  
+    font-weight: normal;  
+    font-style: normal;  
+ }
+ @font-face {  
+   font-family: 'zcool_text';  
+   src: url('./zcool_text.ttf');  
+   font-weight: normal;  
+   font-style: normal;  
+}
