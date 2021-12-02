@@ -19,19 +19,17 @@
       clickMode="push"
       class="particle"
     />
-
 <el-container style="height:100%;" direction="vertical" >
 <div style="margin:10px;">
 
     <el-breadcrumb separator="|" style="margin-bottom:30px;margin-left:15px;">
-    <el-breadcrumb-item :to="{ path: '/data' }">数据概况</el-breadcrumb-item>
-    <el-breadcrumb-item :to="{ path: '/analysis' }">预测分析</el-breadcrumb-item>
-    <el-breadcrumb-item :to="{ path: '/demo' }">测试</el-breadcrumb-item>
+    <el-breadcrumb-item :to="{ path: '/world' }">世界</el-breadcrumb-item>
+    <el-breadcrumb-item :to="{ path: '/china' }">中国</el-breadcrumb-item>
+    <el-breadcrumb-item :to="{ path: '/demo' }">预测</el-breadcrumb-item>
 </el-breadcrumb>
 
     <!--路由占位符-->
     <router-view></router-view>
-
 </div>
 
 <div class="container">
@@ -63,8 +61,6 @@
         
 
 
-
-
 </el-container>
 </div>
 </template>
@@ -74,24 +70,23 @@
 </script>
 
 
-
 <style lang="less" scoped>
 .dv-border-box-9{
-    width:100%;
-    height: 100%;
+  width:100%;
+  height: 100%;
 }
 .el-breadcrumb  /deep/  .el-breadcrumb__inner 
-      {
-        color: #96dee8 !important;			
-        font-size: 20px;
-    }
+{
+  color: #96dee8 !important;			
+  font-size: 20px;
+}
 .footer{
-    color: #96dee8;
-    font-size: 15px;
-    text-indent: 2em; 
-    margin:5px;
-    text-align: center;
-    margin-top: 20px;
+  color: #96dee8;
+  font-size: 15px;
+  text-indent: 2em; 
+  margin:5px;
+  text-align: center;
+  margin-top: 20px;
 }
 .text{
     color: #c0dde0;
