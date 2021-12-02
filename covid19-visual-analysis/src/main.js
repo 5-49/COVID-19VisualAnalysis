@@ -8,7 +8,6 @@ import echarts from 'echarts'
 import axios from 'axios'
 import dataV from '@jiaminghi/data-view'
 import VueParticles from 'vue-particles'
-import './assets/css/global.css'
 import './assets/css/font.css'
 import './assets/theme'
 import "./assets/date.less"
