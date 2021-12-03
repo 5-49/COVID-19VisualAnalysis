@@ -9,9 +9,15 @@ import axios from 'axios'
 import dataV from '@jiaminghi/data-view'
 import VueParticles from 'vue-particles'
 import './assets/css/font.css'
+import './assets/css/global.css'
 import './assets/theme'
 import "./assets/date.less"
+
 import 'echarts-gl';
+
+import china from 'echarts/map/json/china.json' // 引入json文件
+echarts.registerMap('china', china) // 在echarts中注册使用这个文件
+
 
 Vue.config.productionTip = false
 Vue.use(dataV)
