@@ -32,7 +32,7 @@
     <router-view></router-view>
 </div>
 
-<div class="container">
+<!-- <div class="container">
     <div class="fa-left fl text">
         <h4>联系我们</h4>
             <p>地址：中国 上海曹安公路4800号同济大学软件学院</p>
@@ -57,7 +57,7 @@
                 <li><a target="_blank" href="http://www.tongji.edu.cn" class="text">同济大学官网 </a></li>
             </ul>
     </div>
-</div>
+</div> -->
         
 
 

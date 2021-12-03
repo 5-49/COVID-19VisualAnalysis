@@ -11,6 +11,7 @@ import VueParticles from 'vue-particles'
 import './assets/css/font.css'
 import './assets/theme'
 import "./assets/date.less"
+import 'echarts-gl';
 
 Vue.config.productionTip = false
 Vue.use(dataV)

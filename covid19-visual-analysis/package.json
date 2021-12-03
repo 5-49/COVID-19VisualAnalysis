@@ -11,7 +11,7 @@
     "axios": "^0.22.0",
     "core-js": "^3.6.5",
     "echarts": "^4.9.0",
-    "echarts-gl": "^2.0.8",
+    "echarts-gl": "^1.1.0",
     "element-ui": "^2.15.6",
     "less": "^4.1.1",
     "less-loader": "^7.3.0",
