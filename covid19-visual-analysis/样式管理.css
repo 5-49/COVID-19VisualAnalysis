@@ -1,0 +1,19 @@
+.color{
+  color: #ddffff;
+  color: #96dee8;
+  color: #00ffff;
+  color: #3fb1e3;
+  color: #6be6c1;
+  color: #009999;
+  color: #916262;
+  color: #eec77d;
+  color: #c4ebad;
+}
+.text{
+  font-family: zcool_text;
+  font-family: zcool_title;
+  font-family: zcool;
+}
+
+/* echarts的主题统一写 walden */
+/* dataV的调色使用 :color="['#3fb1e3', '#96dee8']" */

@@ -1,6 +1,10 @@
 <template>
+<div>
   <div id="regionCharts" :style="{width: '80%', height: '600px'}"></div>
+  <div class="map">
 
+  </div>
+</div>
 </template>
 
 <script>
@@ -25,7 +29,7 @@ export default{
           top: 'bottom',
           text: ['高', '低'],//取值范围的文字
           inRange: {
-            color: ['#e0ffff', '#006edd']//取值范围的颜色
+            color: ['#ffffff','#009999']//取值范围的颜色
           },
           show: true//图注
         },
@@ -49,7 +53,7 @@ export default{
               borderColor: 'rgba(0, 0, 0, 0.2)'
           },
           emphasis: {
-              areaColor: '#F3B329',//鼠标选择区域颜色
+              areaColor: '#6be6c1',//鼠标选择区域颜色
               shadowOffsetX: 0,
               shadowOffsetY: 0,
               shadowBlur: 20,

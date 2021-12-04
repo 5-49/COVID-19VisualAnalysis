@@ -73,7 +73,7 @@
     margin-top: 20px;
 }
 .text{
-    color: #c0dde0;
+    color: #ddffff;
 }
 .fa-left {
     width: 380px;
