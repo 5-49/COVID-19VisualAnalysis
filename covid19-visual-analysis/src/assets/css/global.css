@@ -8,17 +8,17 @@
     background-position: right top;
     background-attachment: fixed;
 }
-/* .bg_after{
-  position: absolute;
-  top: 0;
-  left: 0;
-  content: "";
-  background-color: rgba(0, 0, 0, 0.212);
-  opacity: 0.5;
-  width: 100%;
-  height: 100%;
-} */
 .dv-border-box-9{
     padding-bottom: 40px;
 }
-
+.text_headline{
+  color: #96dee8;
+  font-family: 'zcool';
+  font-size: 35px;
+  text-align: center;
+}
+.info_text{
+  color: #96dee8;
+  font-family: 'zcool';
+  font-size: 25px;
+}
