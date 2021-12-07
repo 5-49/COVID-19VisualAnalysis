@@ -14,10 +14,16 @@ import './assets/theme'
 import "./assets/date.less"
 
 import 'echarts-gl';
-
-import china from 'echarts/map/json/china.json' // 引入json文件
-echarts.registerMap('china', china) // 在echarts中注册使用这个文件
 import '../node_modules/echarts/map/js/world.js' // 引入世界地图
+import '../node_modules/echarts/map/json/province/anhui.json' // 引入世界地图
+
+import china from 'echarts/map/json/china.json' 
+echarts.registerMap('china', china) 
+
+
+// import zhejiang from 'echarts/map/json/zhejiang.json' 
+// echarts.registerMap('zhejiang', zhejiang) 
+
 
 Vue.config.productionTip = false
 Vue.use(dataV)
