@@ -1,0 +1,198 @@
+<template>
+  <div>
+    <div ref="provin_Map" style="height:600px;width:600px;background: #eee" ></div>
+    <div id="myChartChina" :style="{width: '100%', height: '500px'}"></div>
+  </div>
+</template>
+
+<script>
+import 'echarts/map/js/province/shanxi.js' // 引入山西地图
+export default {
+  data () {
+    return {
+      provin_Map: {
+        title: {
+          text: '以后订阅我博客的人群分布',
+          x: 'center'
+        },
+        tooltip: {
+          trigger: 'item'
+        },
+        legend: {
+          orient: 'vertical',
+          x: 'left',
+          data: ['iphoneX']
+        },
+        dataRange: {
+          min: 0,
+          max: 2500,
+          x: 'left',
+          y: 'bottom',
+          text: ['max', 'min'],
+          calculable: true
+        },
+        toolbox: {
+          show: true,
+          orient: 'vertical',
+          x: 'right',
+          y: 'center',
+          feature: {
+            mark: {show: true},
+            dataView: {show: true, readOnly: false},
+            restore: {show: true},
+            saveAsImage: {show: true}
+          }
+        },
+        roamController: {
+          show: true,
+          x: 'right',
+          mapTypeControl: {
+            'china': true
+          }
+        },
+        series: [
+          {
+            name: '帅哥美女',
+            type: 'map',
+            mapType: '山西',
+            roam: false,
+            itemStyle: {
+              normal: {label: {show: true}},
+              emphasis: {label: {show: true}}
+            },
+            data: [
+              {name: '太原市', value: 130},
+              {name: '吕梁市', value: 50},
+              {name: '临汾', value: 31},
+              {name: '大同', value: 55},
+              {name: '方山', value: 90},
+              {name: '临县', value: 10},
+              {name: '运城', value: 70},
+              {name: '离石', value: 50},
+              {name: '柳林', value: 30},
+              {name: '汾阳', value: 50}
+            ]
+          }
+        ]
+      }
+    }
+  },
+  // 钩子函数  不了解的话 建议看看 vue的生命周期
+  mounted () {
+    this.mapEchartsInit()
+    this.drawLine()
+  },
+  methods: {
+    mapEchartsInit () {
+      this.$echarts.init(this.$refs.provin_Map).setOption(this.provin_Map)
+    },
+    drawLine () {
+      // 基于准备好的dom，初始化echarts实例
+      var myChartContainer = document.getElementById('myChartChina')
+      var resizeMyChartContainer = function () {
+        myChartContainer.style.width = (document.body.offsetWidth / 2) + 'px'// 页面一半的大小
+      }
+      resizeMyChartContainer()
+      var myChartChina = this.$echarts.init(myChartContainer)
+
+      function randomData () {
+        return Math.round(Math.random() * 500)
+      }
+      // 绘制图表
+      var optionMap = {
+        tooltip: {},
+        legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: ['']
+        },
+        visualMap: {
+          min: 0,
+          max: 1500,
+          left: '10%',
+          top: 'bottom',
+          text: ['高', '低'],
+          calculable: true,
+          color: ['#0b50b9', '#c3e2f4']
+        },
+        selectedMode: 'single',
+        series: [
+          {
+            name: '',
+            type: 'map',
+            mapType: 'china',
+            itemStyle: {
+              normal: {
+                borderColor: 'rgba(0, 0, 0, 0.2)'
+              },
+              emphasis: {
+                shadowOffsetX: 0,
+                shadowOffsetY: 0,
+                shadowBlur: 20,
+                borderWidth: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            },
+            showLegendSymbol: true,
+            label: {
+              normal: {
+                show: true
+              },
+              emphasis: {
+                show: true
+              }
+            },
+            data: [
+              { name: '北京', value: randomData() },
+              { name: '天津', value: randomData() },
+              { name: '上海', value: randomData() },
+              { name: '重庆', value: randomData() },
+              { name: '河北', value: randomData() },
+              { name: '河南', value: randomData() },
+              { name: '云南', value: randomData() },
+              { name: '辽宁', value: randomData() },
+              { name: '黑龙江', value: randomData() },
+              { name: '湖南', value: randomData() },
+              { name: '安徽', value: randomData() },
+              { name: '山东', value: randomData() },
+              { name: '新疆', value: randomData() },
+              { name: '江苏', value: randomData() },
+              { name: '浙江', value: randomData() },
+              { name: '江西', value: randomData() },
+              { name: '湖北', value: randomData() },
+              { name: '广西', value: randomData() },
+              { name: '甘肃', value: randomData() },
+              { name: '山西', value: randomData() },
+              { name: '内蒙古', value: randomData() },
+              { name: '陕西', value: randomData() },
+              { name: '吉林', value: randomData() },
+              { name: '福建', value: randomData() },
+              { name: '贵州', value: randomData() },
+              { name: '广东', value: randomData() },
+              { name: '青海', value: randomData() },
+              { name: '西藏', value: randomData() },
+              { name: '四川', value: randomData() },
+              { name: '宁夏', value: randomData() },
+              { name: '海南', value: randomData() },
+              { name: '台湾', value: randomData() },
+              { name: '香港', value: randomData() },
+              { name: '澳门', value: randomData() }
+            ]
+          }
+        ]
+      }
+
+      myChartChina.setOption(optionMap)
+      window.onresize = function () {
+        resizeMyChartContainer()
+        myChartChina.resize()
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+</style>
+
+

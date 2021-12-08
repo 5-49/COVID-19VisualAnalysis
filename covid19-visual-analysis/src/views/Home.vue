@@ -8,6 +8,7 @@
     <el-breadcrumb-item :to="{ path: '/world' }">世界</el-breadcrumb-item>
     <el-breadcrumb-item :to="{ path: '/china' }">中国</el-breadcrumb-item>
     <el-breadcrumb-item :to="{ path: '/demo' }">预测</el-breadcrumb-item>
+<el-breadcrumb-item :to="{ path: '/test' }">接口测试</el-breadcrumb-item>
 </el-breadcrumb>
 
     <!--路由占位符-->

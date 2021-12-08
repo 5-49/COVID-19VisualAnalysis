@@ -9,6 +9,7 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
+    redirect: '/world',
     children:[
       {
         path: '/demo',
@@ -24,8 +25,12 @@ const routes = [
         path: '/world',
         name: 'World',
         component: () => import('../views/World.vue')
-      }
-
+      },
+      {
+        path: '/test',
+        name: 'Test',
+        component: () => import('../views/test.vue')
+      },
     ]
   },
 ]
