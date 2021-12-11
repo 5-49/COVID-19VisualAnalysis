@@ -87,7 +87,7 @@
       </div>
 
         <!-- 这是省详细数据展示 -->
-        <dv-border-box-1 style="width:50%; margin-top:20px; height:550px;">
+        <dv-border-box-1 style="width:48%; margin-top:20px; height:750px;">
           <div class="text_headline" style="position:relative; left:30px;top:20px">{{this.chosen_provi}}确诊情况</div>
           <!-- 热力图切换按钮 -->
           <el-container style="position:relative;left:40px;margin-top:30px">
@@ -101,9 +101,8 @@
               </el-button></dv-border-box-8>
           </el-container>
           <!-- 热力图显示 -->
-          <div id="provin_MapCharts" ref="provin_MapCharts" style="width:400px;height:400px;margin-left:50px;"></div>
-
-
+          <div id="provin_MapCharts" ref="provin_MapCharts" style="width:400px;height:350px;margin-left:50px;"></div>
+          <div id="provin_BarCharts" ref="provin_BarCharts" style="width:450px;height:300px;margin-left:10px;"></div>
 
         </dv-border-box-1>
     </el-container>
@@ -197,7 +196,7 @@ export default{
     handleRowClick(row){
       console.log(row.Name)
       this.chosen_provi = row.Name
-      this.drawProviMap()
+      this.drawProviGraph()
     },
     //初始化全球热力图配置
     drawCNMap () {
@@ -357,11 +356,12 @@ export default{
       mychart.setOption(option)
     },
     //全国的两个折线图
-    drawChart(){
+    drawCNLine(){
       let myChart0 = this.$echarts.init(this.$refs.cur_chart,'walden');
       let myChart1 = this.$echarts.init(this.$refs.tot_chart,'walden');
 
     　myChart0.setOption({
+      animationDuration: 10000,
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -418,6 +418,7 @@ export default{
         //结束
       });
   　　myChart1.setOption({
+      animationDuration: 10000,
       //图表开始
           tooltip: {
               trigger: 'axis',
@@ -481,15 +482,15 @@ export default{
           //结束
       　　});
     },
-    //初始化每个省的热力图
-    drawProviMap(){
+    //初始化每个省的热力图和柱状图
+    drawProviGraph(){
       this.city_cur_confi=[
         {name: '太原市', value: 130},
         {name: '临汾市', value: 31},
         {name: '大同市', value: 55},
         {name: '运城市', value: 70},
       ]
-      let option = {
+      let map_option = {
         tooltip: {
             trigger: 'item',
             formatter: function (params) {
@@ -539,9 +540,65 @@ export default{
           },
         ]
       }
-      let mychart = this.$echarts.init(document.getElementById('provin_MapCharts'))
-      mychart.setOption(option)
-      this.$echarts.init(this.$refs.provin_MapCharts).setOption(option)
+      let myMapchart = this.$echarts.init(document.getElementById('provin_MapCharts'))
+      myMapchart.setOption(map_option)
+      
+      let bar_option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        toolbox: {
+          show: true,
+          left: 'right',
+          top: 'center',
+        },
+        xAxis: [
+          {
+            type: 'category',
+            axisLine: {  //这是x轴文字颜色
+                lineStyle: {
+                    color: "#fff",
+                }
+            },
+            data: this.city_cur_confi.map(function (item) {
+            return item.name;
+          })
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            axisLine: {  //这是x轴文字颜色
+                lineStyle: {
+                    color: "#fff",
+                }
+            }
+          }
+        ],
+        series: [
+          {
+            name: '现存确诊',
+            type: 'bar',
+            data: this.city_cur_confi.map(function (item) {
+            return item.value;
+            }),
+            itemStyle: {
+              normal: {
+                  color: function(params) {
+                    //注意，如果颜色太少的话，后面颜色不会自动循环，最好多定义几个颜色
+                      var colorList = ['#ddffff','#96dee8','#00ffff','#3fb1e3','#6be6c1','#009999'];
+                      return colorList[params.dataIndex]
+                  }
+              }
+        }
+          },
+        ]
+      };
+      let myBarchart = this.$echarts.init(document.getElementById('provin_BarCharts'))
+      myBarchart.setOption(bar_option)
     },
     //渲染省市热力图现有确诊数据
     drawProvinCurData(){
@@ -551,7 +608,7 @@ export default{
         {name: '大同市', value: 55},
         {name: '运城市', value: 70},
       ] // 该数据是从服务器获取到的数据
-      let option = {
+      let map_option = {
         series: [
           {
             name: '现存确诊',
@@ -565,9 +622,22 @@ export default{
           }
         ]
       }
-      this.$echarts.init(this.$refs.provin_MapCharts).setOption(option)
-      let mychart = this.$echarts.init(document.getElementById('provin_MapCharts'))
-      mychart.setOption(option)
+      let myMapchart = this.$echarts.init(document.getElementById('provin_MapCharts'))
+      myMapchart.setOption(map_option)
+
+      let bar_option = {
+        series: [
+          {
+            name: '现存确诊',
+            type: 'bar',
+            data: this.city_cur_confi.map(function (item) {
+            return item.value;
+            })
+          },
+        ]
+      };
+      let myBarchart = this.$echarts.init(document.getElementById('provin_BarCharts'))
+      myBarchart.setOption(bar_option)
     },
     //渲染省市热力图累计确诊数据
     drawProvinTotData(){
@@ -578,7 +648,7 @@ export default{
         {name: '运城市', value: 700},
         {name: '长治市', value: 600},
       ] // 该数据是从服务器获取到的数据
-      let option = {
+      let map_option = {
         series: [
           {
             name: '现存确诊',
@@ -592,15 +662,28 @@ export default{
           }
         ]
       }
-      let mychart = this.$echarts.init(document.getElementById('provin_MapCharts'))
-      mychart.setOption(option)
-      this.$echarts.init(this.$refs.provin_MapCharts).setOption(option)
+      let myMapchart = this.$echarts.init(document.getElementById('provin_MapCharts'))
+      myMapchart.setOption(map_option)
+
+      let bar_option = {
+        series: [
+          {
+            name: '累计确诊',
+            type: 'bar',
+            data: this.city_tot_confi.map(function (item) {
+            return item.value;
+            })
+          },
+        ]
+      };
+      let myBarchart = this.$echarts.init(document.getElementById('provin_BarCharts'))
+      myBarchart.setOption(bar_option)
     },
   },
   mounted(){
     this.drawCNMap() // 在页面进入的时候，先请求后端数据再调用这个函数，但由于我这里是写死的假数据，于是就直接调用了
-    this.drawChart()
-    this.drawProviMap()
+    this.drawCNLine()
+    this.drawProviGraph()
   },
 }
 
