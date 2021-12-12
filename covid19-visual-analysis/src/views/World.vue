@@ -1,11 +1,27 @@
 <template>
   <div id='globe'>
+    <div style="height: 700px">
      <div
       class="earthmap"
       id="chart_example6"
-      style="width:800px;height:700px;"
-    >
+      style="width:700px;height:700px; float: left; margin-left: -100px">
     </div>
+    <div style="width:500px;height:250px; float: right; margin-right: 550px; margin-bottom: 500px; margin-top: 150px">
+      <dv-border-box-12 style="padding-left: 15px; padding-top: 25px; height: 100%">
+        <div v-if="curCountry.countryName != ''">
+          <h2>{{curCountry.countryName}}</h2>
+          <h3>现有确诊：{{curCountry.curNum}}</h3>
+          <h3>累计确诊：{{curCountry.tolNum}}</h3>
+          <h3>累计治愈：{{curCountry.cureNum}}</h3>
+        </div>
+        <div v-else style="padding-top: 100px; width: 100%"><dv-decoration-3 style="width:100%;height:50px;" /></div>
+      </dv-border-box-12>
+    </div>
+    </div>
+    <div>
+      <el-divider></el-divider>
+    </div>
+    
 
   </div>
 </template>
@@ -18,6 +34,14 @@ export default {
   data() {
     return {
       totalNum: 1000,
+      
+      curCountry:{          /// 鼠标悬浮时选中的国家
+        countryName: '',    /// 国家名称
+        curNum: 0,          /// 现有确诊
+        tolNum: 0,          /// 累计确诊
+        cureNum: 0,         /// 累计治愈
+      }
+
     }
   },
   mounted() {
@@ -26,29 +50,30 @@ export default {
   methods: {
     // 绘制图表
     initData() {
+      let self = this
      	let _nameMap_ = nameMap
       let _dataArr_ = dataArr
       //初始化canvas节点
       let myChart = this.$echarts.init(document.getElementById('chart_example6'))
-      //随机获取点点坐标函数
-      let rodamData = function() {
-        let name = '随机点' + Math.random().toFixed(5) * 100000
-        // 终点经度
-        let longitude = 105.18
-        // 终点纬度
-        let latitude = 37.51
-        // 起点经度
-        let longitude2 = Math.random() * 360 - 180
-        // 起点纬度
-        let latitude2 = Math.random() * 180 - 90
-        return {
-          coords: [
-            [longitude2, latitude2],
-            [longitude, latitude]
-          ],
-          value: (Math.random() * 3000).toFixed(2)
-        }
-      }
+      // //随机获取点点坐标函数
+      // let rodamData = function() {
+      //   let name = '随机点' + Math.random().toFixed(5) * 100000
+      //   // 终点经度
+      //   let longitude = 105.18
+      //   // 终点纬度
+      //   let latitude = 37.51
+      //   // 起点经度
+      //   let longitude2 = Math.random() * 360 - 180
+      //   // 起点纬度
+      //   let latitude2 = Math.random() * 180 - 90
+      //   return {
+      //     coords: [
+      //       [longitude2, latitude2],
+      //       [longitude, latitude]
+      //     ],
+      //     value: (Math.random() * 3000).toFixed(2)
+      //   }
+      // }
       // 使用 echarts 绘制世界地图的实例作为纹理
       var canvas = document.createElement('canvas');
       var mapChart = this.$echarts.init(canvas, null, {
@@ -56,49 +81,6 @@ export default {
       });
       mapChart.setOption({
           backgroundColor: 'rgba(23, 75, 110, 0.5)',
-          // series : [
-          //     {
-          //         type: 'map',
-          //         map: 'world',
-          //         // 绘制完整尺寸的 echarts 实例
-          //         top: 0, left: 0,
-          //         right: 0, bottom: 0,
-          //         boundingCoords: [[-180, 90], [180, -90]]
-          //     }
-          // ],
-          // // 视觉映射组件
-          // visualMap: {
-          //   min: 0,
-          //   max: 10000,
-          //   text:['max','min'],
-          //   realtime: false,
-          //   calculable: true,
-          //   color: ['#0064d0','#c3e0ff'],
-          // },
-          // itemStyle: {
-          //   borderColor: '#000d2d',
-          //   normal: {
-          //     areaColor: 'rgb(241, 233, 233)',
-          //     borderColor: '#000c2d'
-          //   },
-          //   emphasis: {
-          //     areaColor: 'rgb(241, 0, 233)'
-          //   }
-          // },
-          // label: {
-          //   fontSize: 25,
-          // }
-          // 图表主标题
-          // title: {
-          //   text: '世界地图', // 主标题文本，支持使用 \n 换行
-          //   top: 10, // 定位 值: 'top', 'middle', 'bottom' 也可以是具体的值或者百分比
-          //   left: 'center', // 值: 'left', 'center', 'right' 同上
-          //   textStyle: { // 文本样式
-          //     fontSize: 24,
-          //     fontWeight: 600,
-          //     color: '#000'
-          //   }
-          // },
           grid: {
             width:'100%',
             height:'100%',
@@ -110,11 +92,12 @@ export default {
           // 提示框组件
           tooltip: {
             trigger: 'item', // 触发类型, 数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用
+            show: true,
             // 提示框浮层内容格式器，支持字符串模板和回调函数两种形式
             // 使用函数模板  传入的数据值 -> value: number | Array
             formatter: function (val) {
               if(val.data == null) return ;
-              return val.data.name + ': ' + val.data.value
+              return val.name + ': ' + val.value
             }
           },
           // 视觉映射组件
@@ -136,7 +119,7 @@ export default {
               roam: true,
               // 图形上的文本标签
               label: {
-                show: false // 是否显示对应地名
+                show: true // 是否显示对应地名
               },
               zoom: 1.2,
               // 地图区域的多边形 图形样式
@@ -168,8 +151,15 @@ export default {
             }
           ]
       });
-    
-      
+      mapChart.on('mouseover', function(params){
+        console.log(params.data.name)  //这里的params是鼠标悬浮的图表节点的数据
+        self.curCountry.countryName = params.data.name
+        /// 下面是瞎写的
+        self.curCountry.curNum      = params.data.value
+        self.curCountry.tolNum      = params.data.value * 1.5
+        self.curCountry.cureNum     = params.data.value - 1
+      })
+            
       //echarts配置
       let option = {
         // backgroundColor: '#013954',
@@ -184,18 +174,13 @@ export default {
           }
         },
         tooltip: {
-          trigger: 'item'
+          trigger: 'item',
+          "confine": true,
+          "formatter": (p) => {
+            return 'hello'
+          }
         },
-        // legend: {
-        //   orient: 'vertical',
-        //   top: 'bottom',
-        //   left: 'right',
-        //   data: ['北京 Top10', '上海 Top10', '广州 Top10'],
-        //   textStyle: {
-        //     color: '#fff'
-        //   },
-        //   selectedMode: 'single'
-        // },
+        
         globe: {
           baseTexture: mapChart, 
           environment: this.$echarts.graphic.LinearGradient(
@@ -237,7 +222,6 @@ export default {
           viewControl: {
             alpha: 30,
             beta: 160,
-            // targetCoord: [116.46, 39.92],
             autoRotate: true,
             autoRotateAfterStill: 1,
             distance: 240
@@ -261,15 +245,13 @@ export default {
         ]
       }
       // 随机数据 i控制线数量
-      for (let i = 0; i < 20; i++) {
-        option.series[0].data = option.series[0].data.concat(rodamData())
-      }
+
       //画图
       myChart.setOption(option)
       window.addEventListener('resize', function() {
         myChart.resize()
       })
-    }
+    },
   },
   watch: {},
   created() {}
@@ -277,7 +259,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-// rgba(69, 128, 230, 0.8)
+
 h {
   color: rgb(23, 75, 110)
   #000c2d
