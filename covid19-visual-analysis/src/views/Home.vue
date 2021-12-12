@@ -1,52 +1,50 @@
 <template>
-<el-container style="height:100%;" direction="vertical" >
-<div class="bg">
-  <div class="bg_after">
-<div style="margin:10px;">
+  <el-container style="height:100%;" direction="vertical" >
+    <div class="bg">
+      <div class="bg_after">
+        <div style="margin:10px;">
+            <el-breadcrumb separator="|" style="margin-bottom:30px;margin-left:15px;">
+              <el-breadcrumb-item :to="{ path: '/world' }">世界</el-breadcrumb-item>
+              <el-breadcrumb-item :to="{ path: '/china' }">中国</el-breadcrumb-item>
+              <el-breadcrumb-item :to="{ path: '/demo' }">预测</el-breadcrumb-item>
+            </el-breadcrumb>
 
-    <el-breadcrumb separator="|" style="margin-bottom:30px;margin-left:15px;">
-    <el-breadcrumb-item :to="{ path: '/world' }">世界</el-breadcrumb-item>
-    <el-breadcrumb-item :to="{ path: '/china' }">中国</el-breadcrumb-item>
-    <el-breadcrumb-item :to="{ path: '/demo' }">预测</el-breadcrumb-item>
-</el-breadcrumb>
+            <!--路由占位符-->
+            <router-view></router-view>
 
-    <!--路由占位符-->
-    <router-view></router-view>
+        </div>
 
-</div>
-<div style="height:80px"></div>
-<div class="container">
-    <div class="fa-left fl text">
-        <h4>联系我们</h4>
-            <p>地址：中国 上海曹安公路4800号同济大学软件学院</p>
-
-            <p>邮编：201804</p>
-
-            <p>联系电话：86-21-69589585,69589332(FAX)</p>
-    </div>
-     <div class="fa-mid fl text">
-         <a target="_blank" href="http://www.tongji.edu.cn">
-        <img src="@/assets/image/tjlogo.png" alt style="
-            filter:drop-shadow(2px 2px 10px white);
-            margin-top:30px;
-        "></a>
-       
-    </div>
-    <div class="fa-right fr text">
-         <h4>快速链接</h4>
-            <ul>
-                <li><a target="_blank" href="http://sse.tongji.edu.cn/" class="text">软件学院官网</a></li>
-                <br>
-                <li><a target="_blank" href="http://www.tongji.edu.cn" class="text">同济大学官网 </a></li>
-            </ul>
-    </div>
-</div>
+        <div style="height:80px"></div>
         
+        <div class="container">
+            <div class="fa-left fl text">
+                <h4>联系我们</h4>
+                    <p>地址：中国 上海曹安公路4800号同济大学软件学院</p>
 
-</div>
-</div>
+                    <p>邮编：201804</p>
 
-</el-container>
+                    <p>联系电话：86-21-69589585,69589332(FAX)</p>
+            </div>
+            <div class="fa-mid fl text">
+                <a target="_blank" href="http://www.tongji.edu.cn">
+                <img src="@/assets/image/tjlogo.png" alt style="
+                    filter:drop-shadow(2px 2px 10px white);
+                    margin-top:30px;
+                "></a>
+              
+            </div>
+            <div class="fa-right fr text">
+                <h4>快速链接</h4>
+                    <ul>
+                        <li><a target="_blank" href="http://sse.tongji.edu.cn/" class="text">软件学院官网</a></li>
+                        <br>
+                        <li><a target="_blank" href="http://www.tongji.edu.cn" class="text">同济大学官网 </a></li>
+                    </ul>
+            </div>
+        </div>
+      </div>
+    </div>
+  </el-container>
 </template>
 
 <script>
