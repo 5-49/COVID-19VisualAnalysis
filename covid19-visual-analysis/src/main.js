@@ -20,10 +20,9 @@ import '../node_modules/echarts/map/json/province/anhui.json' // 引入世界地
 import china from 'echarts/map/json/china.json' 
 echarts.registerMap('china', china) 
 
-
-// import zhejiang from 'echarts/map/json/zhejiang.json' 
-// echarts.registerMap('zhejiang', zhejiang) 
-
+//导入省份模块
+import 'echarts/map/js/province/shanxi'
+import 'echarts/map/js/province/zhejiang'
 
 Vue.config.productionTip = false
 Vue.use(dataV)
@@ -32,6 +31,8 @@ Vue.use(ElementUI);
 Vue.use(VueParticles)
 Vue.config.productionTip = false
 Vue.prototype.$http=axios
+
+axios.defaults.baseURL = 'http://101.132.138.14:8082/'
 
 new Vue({
   router,
