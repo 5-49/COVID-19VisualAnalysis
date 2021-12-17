@@ -1,111 +1,101 @@
 <template>
   <div>
-    <el-container style="position:relative;">
-      <dv-decoration-7 style="height:30px;">
-        <el-button type="text" class="header_text" @click="Jump2World" style="font-size:22px">
-          世界
-        </el-button>
-      </dv-decoration-7>
-      <dv-decoration-7 style="height:30px;">
-        <el-button type="text" class="header_text" @click="Jump2China" style="font-size:22px">
-          中国
-        </el-button>
-      </dv-decoration-7>
-      <dv-decoration-7 style="height:30px;">
-        <el-button type="text" class="header_text" @click="Refresh" style="font-size:22px">
-          {{ nowDate }}{{ nowTime }}
-        </el-button>
-      </dv-decoration-7>
-      <!-- <dv-decoration-8 style="width:550px;height:50px;">
-      </dv-decoration-8>
-      <dv-decoration-5 style="width:550px;height:40px;">
-      </dv-decoration-5>
-      <dv-decoration-8 :reverse="true" style="width:550px;height:50px;">
-      </dv-decoration-8> -->
-    </el-container>
+    <div id="CN_MapCharts" style="width:500px; height:500px;"></div>
   </div>
 </template>
 
 <script>
 export default{
   data() {
-    return {
-      nowDate: "",    // 当前日期
-      nowTime: "",    // 当前时间
-    }
+    return {};
   },
   methods: {
-    GetDate(data) {
-      let formatDateTime;
-      let Y = data.getFullYear();
-      let M = data.getMonth() + 1;
-      let D = data.getDate();
-      let H = data.getHours();
-      let Min = data.getMinutes();
-      let S = data.getSeconds();
-      let W = data.getDay();
-      H = H < 10 ? "0" + H : H;
-      Min = Min < 10 ? "0" + Min : Min;
-      S = S < 10 ? "0" + S : S;
-      switch (W) {
-        case 0:
-          W = "日";
-          break;
-        case 1:
-          W = "一";
-          break;
-        case 2:
-          W = "二";
-          break;
-        case 3:
-          W = "三";
-          break;
-        case 4:
-          W = "四";
-          break;
-        case 5:
-          W = "五";
-          break;
-        case 6:
-          W = "六";
-          break;
-        default:
-          break;
+    drawCNMap () {
+      let option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            crossStyle: {
+              color: '#999'
+            }
+          }
+        },
+        toolbox: {
+          feature: {
+            dataView: { show: true, readOnly: false },
+            magicType: { show: true, type: ['line', 'bar'] },
+            restore: { show: true },
+            saveAsImage: { show: true }
+          }
+        },
+        legend: {
+          data: ['累计确诊人数', '预测确诊人数', 'Temperature']
+        },
+        xAxis: [
+          {
+            type: 'category',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            axisPointer: {
+              type: 'shadow'
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: 'Precipitation',
+            min: 0,
+            max: 250,
+            interval: 50,
+            axisLabel: {
+              formatter: '{value} ml'
+            }
+          },
+          {
+            type: 'value',
+            name: 'Temperature',
+            min: 0,
+            max: 25,
+            interval: 5,
+            axisLabel: {
+              formatter: '{value} °C'
+            }
+          }
+        ],
+        series: [
+          {
+            name: '累计确诊人数',
+            type: 'bar',
+            data: [
+              2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3
+            ]
+          },
+          {
+            name: '预测确诊人数',
+            type: 'bar',
+            data: [
+              2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
+            ]
+          },
+          {
+            name: 'Temperature',
+            type: 'line',
+            yAxisIndex: 1,
+            data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+          }
+        ]
       }
-      this.nowDate = Y + "年" + M + "月" + D + "日 ";
-      this.nowTime = H + ":" + Min + ":" + S;
-    },
-    Jump2World() {
-      this.$router.push({path: '/world'})
-    },
-    Jump2China() {
-      this.$router.push({path: '/china'})
-    },
-    Refresh() {
-      this.$router.go(0)
+      let mychart = this.$echarts.init(document.getElementById('CN_MapCharts'))
+      mychart.setOption(option)
     }
   },
-  mounted() {
-    // 页面加载完后显示当前时间
-    this.GetDate(new Date())
-    // 定时刷新时间
-    this.timer = setInterval(()=> {
-       this.GetDate(new Date()) // 修改数据date
-    }, 500)
-  },
-  destroyed() {
-    if (this.timer) {  // 注意在vue实例销毁前，清除我们的定时器
-      clearInterval(this.timer);
-    }
+  mounted(){
+    this.drawCNMap() // 在页面进入的时候，先请求后端数据再调用这个函数，但由于我这里是写死的假数据，于是就直接调用了
   }
 }
 </script>
 
 <style lang="less" scoped>
-.header_text{
-  color: #96dee8;
-  font-family: 'zcool';
-  font-size: 25px;
-  width: 450px;
-}
+
 </style>
