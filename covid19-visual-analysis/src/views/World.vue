@@ -1,23 +1,30 @@
 <template>
   <div id='globe'>
     <div style="height: 700px">
-     <div
-      class="earthmap"
-      id="chart_example6"
-      style="width:700px;height:700px; float: left; margin-left: -100px">
+      <!-- 3D地球 -->
+      <div
+        class="earthmap"
+        id="chart_example6"
+        style="width:700px;height:700px; float: left; margin-left: -100px">
+      </div>
+      <!-- 确诊信息 -->
+      <div style="width:500px;height:250px; float: right; margin-right: 550px; margin-bottom: 500px; margin-top: 150px">
+        <dv-border-box-12 style="padding-left: 15px; padding-top: 25px; height: 100%">
+          <div v-if="curCountry.countryName != ''">
+            <h2 style="color: #96dee8;">{{curCountry.countryName}}</h2>
+            <h3>现有确诊：{{curCountry.curNum}}</h3>
+            <h3>累计确诊：{{curCountry.tolNum}}</h3>
+            <h3>累计治愈：{{curCountry.cureNum}}</h3>
+          </div>
+          <div v-else style="padding-top: 100px; width: 100%"><dv-decoration-3 style="width:100%;height:50px;" /></div>
+        </dv-border-box-12>
+      </div>
+      <div style="width: 400px; height: 700px; background-color: black; z-index: 999; position: relative; left: 75%; color: white">
+      
+      </div>
+
     </div>
-    <div style="width:500px;height:250px; float: right; margin-right: 550px; margin-bottom: 500px; margin-top: 150px">
-      <dv-border-box-12 style="padding-left: 15px; padding-top: 25px; height: 100%">
-        <div v-if="curCountry.countryName != ''">
-          <h2 style="color: #96dee8;">{{curCountry.countryName}}</h2>
-          <h3>现有确诊：{{curCountry.curNum}}</h3>
-          <h3>累计确诊：{{curCountry.tolNum}}</h3>
-          <h3>累计治愈：{{curCountry.cureNum}}</h3>
-        </div>
-        <div v-else style="padding-top: 100px; width: 100%"><dv-decoration-3 style="width:100%;height:50px;" /></div>
-      </dv-border-box-12>
-    </div>
-    </div>
+
     <div class="top_chart">
       <el-divider></el-divider>
       <!-- 这是下面省展示 -->
@@ -26,11 +33,10 @@
       <div class="table-wrapper" style="width: 100%; margin-top:20px; margin-left: 60px; float: left">
         <el-table
             :data="countryInfo"
-            :cell-style="cellStyle"
             @row-click="handleRowClick"
             size="mini"
           >
-            <el-table-column prop="Name" label="国家" >
+            <el-table-column prop="name" label="国家" >
             </el-table-column>
             <el-table-column prop="curConfirmed" label="现有确诊" sortable>
             </el-table-column>
@@ -48,7 +54,7 @@
       </div>
 
       <div style="width: 800px; height: 600px;  float: right; margin-left: 80px; margin-top: 20px">
-        <dv-border-box-12 style="width: 800px">
+        <dv-border-box-12 style="width: 900px" id="top10Chart">
             
         </dv-border-box-12>
       </div>
@@ -77,7 +83,7 @@ export default {
      //每个省的现况
       countryInfo:[
         {
-          Name: 'American',
+          name: 'America',
           curConfirmed: '111',
           totConfirmed: '3223',
           curedCount: '2200',
@@ -85,7 +91,7 @@ export default {
           curedPercent: '98%',
           deadPercent: '2%',
         }, {
-          Name: 'China',
+          name: 'China',
           curConfirmed: '121',
           totConfirmed: '2223',
           curedCount: '2200',
@@ -94,13 +100,111 @@ export default {
           deadPercent: '2%',
         }, 
       ],
-
+      top10Data: {
+        
+      },
+      selectedCountry: ''
     }
   },
   mounted() {
     this.initData()
   },
   methods: {
+    handleRowClick(row) {
+      // console.log(row)
+      this.selectedCountry = row.name
+      this.drawCountry()
+    },
+    drawCountry() {
+      var top10 =[];
+      var dateSequence = [];
+       var totalInfected = [];
+       var totalCured = [];
+      if(this.selectedCountry == 'America')
+      {      
+        // var top10 = ['美国1','美国2','美国3','美国4','美国5','美国6','美国7','美国8','美国9','美国10']  /// 这个数据是请求的
+        dateSequence = ['2021-1','2021-2','2021-3','2021-4','2021-5','2021-6','2021-7','2021-8','2021-9','2021-10',]
+        totalInfected = [100, 200, 300, 400, 450, 550, 600, 700, 750, 800]
+        totalCured    = [50, 61, 71, 78, 89, 99,120,168,189,199]
+      }
+      if(this.selectedCountry == 'China')
+      {
+        dateSequence = ['2021-1','2021-2','2021-3','2021-4','2021-5','2021-6','2021-7','2021-8','2021-9','2021-10',]
+        totalInfected = [100, 150, 302, 988, 43, 45320, 5430, 50, 50, 800]
+        totalCured    = [50, 567, 671, 678, 812439, 949,1240,1648,1489,1499]
+      }
+
+      var top10Chart = this.$echarts.init(document.getElementById('top10Chart'),'walden');
+      var top10Option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            crossStyle: {
+              color: '#999'
+            }
+          }
+        },
+        toolbox: {
+          feature: {
+            dataView: { show: true, readOnly: false },
+            magicType: { show: true, type: ['line', 'bar'] },
+            restore: { show: true },
+            saveAsImage: { show: true }
+          }
+        },
+        xAxis: [
+          {
+            type: 'category',
+            data: dateSequence,
+            axisPointer: {
+              type: 'shadow'
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: '累计确诊',
+            min: 0,
+            max: 1000,
+            interval: 100,
+            axisLabel: {
+              formatter: '{value}万'
+            }
+          },
+          {
+            type: 'value',
+            name: '累计治愈',
+            min: 0,
+            max: 1000,
+            interval: 100,
+            axisLabel: {
+              formatter: '{value}万'
+            }
+          }
+        ],
+        series: [
+          {
+            name: 'toltalInfected',
+            type: 'bar',
+            data: totalInfected
+          },
+          {
+            name: 'toltalCured',
+            type: 'bar',
+            data: totalCured
+          },
+          {
+            name: 'toltalInfected',
+            type: 'line',
+            yAxisIndex: 1,
+            data: totalInfected
+          }
+        ]
+      };
+      top10Chart.setOption(top10Option)
+    },
     // 绘制图表
     initData() {
       let self = this
@@ -281,9 +385,85 @@ export default {
         ]
       }
       // 随机数据 i控制线数量
-
-
-
+      // var chartDom = document.getElementById('top10Chart');
+      var top10Chart = this.$echarts.init(document.getElementById('top10Chart'),'walden');
+      var top10Option;
+      top10Option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            crossStyle: {
+              color: '#999'
+            }
+          }
+        },
+        toolbox: {
+          feature: {
+            dataView: { show: true, readOnly: false },
+            magicType: { show: true, type: ['line', 'bar'] },
+            restore: { show: true },
+            saveAsImage: { show: true }
+          }
+        },
+        legend: {
+          data: ['Evaporation', 'Precipitation', 'Temperature']
+        },
+        xAxis: [
+          {
+            type: 'category',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            axisPointer: {
+              type: 'shadow'
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: 'Precipitation',
+            min: 0,
+            max: 250,
+            interval: 50,
+            axisLabel: {
+              formatter: '{value} ml'
+            }
+          },
+          {
+            type: 'value',
+            name: 'Temperature',
+            min: 0,
+            max: 25,
+            interval: 5,
+            axisLabel: {
+              formatter: '{value} °C'
+            }
+          }
+        ],
+        series: [
+          {
+            name: 'Evaporation',
+            type: 'bar',
+            data: [
+              2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3
+            ]
+          },
+          {
+            name: 'Precipitation',
+            type: 'bar',
+            data: [
+              2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
+            ]
+          },
+          {
+            name: 'Temperature',
+            type: 'line',
+            yAxisIndex: 1,
+            data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+          }
+        ]
+      };
+      top10Chart.setOption(top10Option)
       //画图
       myChart.setOption(option)
       window.addEventListener('resize', function() {
@@ -299,16 +479,16 @@ export default {
 
 <style lang="less" scoped>
 
-  .el-button {
-    background: transparent;
-    color: rgb(255, 255, 255);
-    font-weight: 1000;
+.el-button {
+  background: transparent;
+  color: rgb(255, 255, 255);
+  font-weight: 1000;
 
-  }
+}
 
-  .el-button:hover {
-    color:rgb(54, 173, 209)
-  }
+.el-button:hover {
+  color:rgb(54, 173, 209)
+}
 
 /deep/ .el-table {
   background-color: transparent !important;
@@ -332,7 +512,7 @@ export default {
 }
 
 h3 {
-  font-family: zcool;
+  // font-family: zcool;
   color: #96dee8;
 }
 

@@ -3,7 +3,7 @@
     <div class="bg">
       <div class="bg_after">
         <div style="margin:10px;">
-          <el-container style="position:relative;">
+          <el-container style="position:relative; margin-bottom: 30px">
             <dv-decoration-7 style="height:30px;">
               <el-button type="text" class="header_text" @click="Jump2World" style="font-size:22px">
                 世界
