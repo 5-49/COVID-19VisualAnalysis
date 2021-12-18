@@ -1,13 +1,25 @@
 <template>
   <div>
-    <div id="CN_MapCharts" style="width:500px; height:500px;"></div>
+    <div id="CN_MapCharts" style="width:800px; height:500px;"></div>
+    <div class="list">
+      <div class="item" v-for="(item,index) in list" :key="index">
+        <div class="time" v-for="(onenew,index) in item.news" :key="index">
+            {{ onenew.title }}
+            <br>
+            <br>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 export default{
   data() {
-    return {};
+    return {
+      list: Array
+    };
   },
   methods: {
     drawCNMap () {
@@ -17,7 +29,7 @@ export default{
           axisPointer: {
             type: 'cross',
             crossStyle: {
-              color: '#999'
+              color: '#fff'
             }
           }
         },
@@ -30,12 +42,20 @@ export default{
           }
         },
         legend: {
-          data: ['累计确诊人数', '预测确诊人数', 'Temperature']
+          textStyle: {
+            color: "#fff"
+          },
+          data: ['累计确诊人数', '预测确诊人数', '增长率','预测增长率']
         },
         xAxis: [
           {
             type: 'category',
             data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            axisLine: {
+              lineStyle: {
+                color: "#fff"
+              }
+            },
             axisPointer: {
               type: 'shadow'
             }
@@ -44,22 +64,32 @@ export default{
         yAxis: [
           {
             type: 'value',
-            name: 'Precipitation',
+            name: '累计确诊人数',
             min: 0,
             max: 250,
             interval: 50,
+            axisLine: {
+              lineStyle: {
+                color: "#fff"
+              }
+            },
             axisLabel: {
-              formatter: '{value} ml'
+              formatter: '{value} K'
             }
           },
           {
             type: 'value',
-            name: 'Temperature',
+            name: '增长率',
             min: 0,
             max: 25,
             interval: 5,
+            axisLine: {
+              lineStyle: {
+                color: "#fff"
+              }
+            },
             axisLabel: {
-              formatter: '{value} °C'
+              formatter: '{value} %'
             }
           }
         ],
@@ -68,30 +98,74 @@ export default{
             name: '累计确诊人数',
             type: 'bar',
             data: [
-              2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3
-            ]
+              2.0, 4.9, 7.0, 23.2, 25.6, 76.7, "-"
+            ],
+            itemStyle: {
+              normal:{
+                color: "#fffacd"
+              }
+            }
           },
           {
             name: '预测确诊人数',
             type: 'bar',
             data: [
-              2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
-            ]
+              "-", "-", "-","-","-","-", 175.6
+            ],
+            itemStyle: {
+              normal:{
+                color: "#ff7f50"
+              }
+            }
           },
           {
-            name: 'Temperature',
+            name: '增长率',
             type: 'line',
             yAxisIndex: 1,
-            data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+            data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, "-"],
+            itemStyle: {
+              normal:{
+                color: "#dcdcdc"
+              }
+            }
+          },
+          {
+            name: '预测增长率',
+            type: 'line',
+            smooth: false,
+            yAxisIndex: 1,
+            data: ["-","-","-","-","-",10.2,20.3],
+            itemStyle: {
+              normal:{
+                color: "#dcdcdc",
+                lineStyle: {
+                  type: 'dotted'
+                }
+              }
+            }
           }
         ]
       }
       let mychart = this.$echarts.init(document.getElementById('CN_MapCharts'))
       mychart.setOption(option)
+    },
+    getNews () {
+      axios({
+        url: 'http://api.tianapi.com/ncov/index',
+        method: 'get',
+        params:{
+          key: '2f3865d193ed10d014d38fd729aa172a'
+        }
+      })
+      .then(res => {
+        this.list=res.data.newslist
+        console.log(this.list)
+      })
     }
   },
   mounted(){
-    this.drawCNMap() // 在页面进入的时候，先请求后端数据再调用这个函数，但由于我这里是写死的假数据，于是就直接调用了
+    this.drawCNMap() 
+    this.getNews()
   }
 }
 </script>
