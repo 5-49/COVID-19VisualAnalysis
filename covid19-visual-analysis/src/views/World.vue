@@ -1,36 +1,54 @@
 <template>
-  <div id='globe'>
-    <div style="height: 700px">
-      <!-- 3D地球 -->
-      <div
-        class="earthmap"
-        id="chart_example6"
-        style="width:700px;height:700px; float: left; margin-left: -100px">
-      </div>
-      <!-- 确诊信息 -->
-      <div style="width:500px;height:250px; float: right; margin-right: 550px; margin-bottom: 500px; margin-top: 150px">
-        <dv-border-box-12 style="padding-left: 15px; padding-top: 25px; height: 100%">
-          <div v-if="curCountry.countryName != ''">
+  <el-container direction="vertical">
+    <!-- 本页面第一部分：全球热力图&新闻播报 -->
+    <el-container style="height: 700px">
+
+      <el-container style="width:25%;" direction="vertical">
+        <dv-border-box-8 style="width: 400px; height: 180px; margin-left: 50px; margin-bottom: 50px; padding-left: 10px">
+        <h3>全球累计确诊：100</h3>
+        <h3>全球现存确诊：100</h3>
+        <h3>全球累计死亡：100</h3>
+        </dv-border-box-8>
+
+        <dv-border-box-1 style="width:400px;height: 300px; margin-left: 50px; margin-bottom: 30px">
+          <div v-if="curCountry.countryName != ''" style="margin-left: 50px">
             <h2 style="color: #96dee8;">{{curCountry.countryName}}</h2>
             <h3>现有确诊：{{curCountry.curNum}}</h3>
             <h3>累计确诊：{{curCountry.tolNum}}</h3>
             <h3>累计治愈：{{curCountry.cureNum}}</h3>
           </div>
-          <div v-else style="padding-top: 100px; width: 100%"><dv-decoration-3 style="width:100%;height:50px;" /></div>
-        </dv-border-box-12>
-      </div>
-      <div style="width: 400px; height: 700px; background-color: black; z-index: 999; position: relative; left: 75%; color: white">
+          <div v-else style="padding-top: 120px; width: 100%"><dv-decoration-3 style="width:100%;height:50px;" /></div>
+        </dv-border-box-1>
+
+        <h3 style="; color: #96dee8; margin-left: 190px">治愈率</h3>
+
+        <dv-decoration-9 style="width:150px; height:150px; margin-left: 150px">
+          <dv-decoration-6 v-if="curCountry.countryName == ''" style="width: 50px; height: 50px; position: relative; left: 0%"/>
+          <span v-else style="font-family: zcool; color: #96dee8; font-size: 24px">60%</span>
+        </dv-decoration-9>
+      </el-container>
+
+     <!-- 中间：3D地球 -->
+      <el-container
+        class="earthmap"
+        id="chart_example6"
+        style="width:800px;height:700px; ">
+      </el-container>
+
+      <!-- 右边：新闻 -->
+      <el-container style="width: 25%; height: 700px; background-color: black;  color: white">
       
-      </div>
+      </el-container>
 
-    </div>
+    </el-container>
 
-    <div class="top_chart">
-      <el-divider></el-divider>
-      <!-- 这是下面省展示 -->
+    <dv-decoration-10 style="width:96%;height:5px;margin-top:50px;" />
+
+    <!-- 这是页面的第二部分：全球top10国家展示 -->
+    <el-container class="top_chart">
     <el-container>
-      <!-- 这是表格 -->
-      <div class="table-wrapper" style="width: 100%; margin-top:20px; margin-left: 60px; float: left">
+      <!-- 左边：表格展示 -->
+      <el-container class="table-wrapper" style="width: 50%; margin-top:20px; margin-left: 10px;">
         <el-table
             :data="countryInfo"
             @row-click="handleRowClick"
@@ -51,18 +69,17 @@
             <el-table-column prop="deadPercent" label="病死率" sortable>
             </el-table-column>
         </el-table>
-      </div>
-
-      <div style="width: 800px; height: 600px;  float: right; margin-left: 80px; margin-top: 20px">
-        <dv-border-box-12 style="width: 900px" id="top10Chart">
-            
+      </el-container>
+      <!-- 右边：渲染具体图标 -->
+      <el-container style="width: 50%; height: 600px;  float: right; margin-left: 80px; margin-top: 20px">
+        <dv-border-box-12 style="width: 900px" id="top10Chart">           
         </dv-border-box-12>
-      </div>
+      </el-container>
     </el-container>
-    </div>
+    </el-container>
     
 
-  </div>
+  </el-container>
 </template>
 
 <script>
@@ -211,7 +228,7 @@ export default {
      	let _nameMap_ = nameMap
       let _dataArr_ = dataArr
       //初始化canvas节点
-      let myChart = this.$echarts.init(document.getElementById('chart_example6'))
+      let myChart = this.$echarts.init(document.getElementById('chart_example6'),'walden')
       
       // 使用 echarts 绘制世界地图的实例作为纹理
       var canvas = document.createElement('canvas');
@@ -303,16 +320,6 @@ export default {
       let option = {
         // backgroundColor: '#013954',
         backgroundColor: 'none',
-        title: {
-          text: '全球累计确诊人数: ' + this.totalNum,
-          x: 'center',
-          y: 0,
-          textStyle: {
-            color: '#96dee8',
-            fontSize: 25,
-            // font-family: 'zcool'
-          }
-        },
         tooltip: {
           trigger: 'item',
           "confine": true,
