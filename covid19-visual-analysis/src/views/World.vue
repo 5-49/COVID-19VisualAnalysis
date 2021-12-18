@@ -9,7 +9,7 @@
     <div style="width:500px;height:250px; float: right; margin-right: 550px; margin-bottom: 500px; margin-top: 150px">
       <dv-border-box-12 style="padding-left: 15px; padding-top: 25px; height: 100%">
         <div v-if="curCountry.countryName != ''">
-          <h2>{{curCountry.countryName}}</h2>
+          <h2 style="color: #96dee8;">{{curCountry.countryName}}</h2>
           <h3>现有确诊：{{curCountry.curNum}}</h3>
           <h3>累计确诊：{{curCountry.tolNum}}</h3>
           <h3>累计治愈：{{curCountry.cureNum}}</h3>
@@ -18,8 +18,41 @@
       </dv-border-box-12>
     </div>
     </div>
-    <div>
+    <div class="top_chart">
       <el-divider></el-divider>
+      <!-- 这是下面省展示 -->
+    <el-container>
+      <!-- 这是表格 -->
+      <div class="table-wrapper" style="width: 100%; margin-top:20px; margin-left: 60px; float: left">
+        <el-table
+            :data="countryInfo"
+            :cell-style="cellStyle"
+            @row-click="handleRowClick"
+            size="mini"
+          >
+            <el-table-column prop="Name" label="国家" >
+            </el-table-column>
+            <el-table-column prop="curConfirmed" label="现有确诊" sortable>
+            </el-table-column>
+            <el-table-column prop="totConfirmed" label="累计确诊" sortable>
+            </el-table-column>
+            <el-table-column prop="curedCount" label="治愈人数" sortable>
+            </el-table-column>
+            <el-table-column prop="deadCount" label="死亡人数" sortable>
+            </el-table-column>
+            <el-table-column prop="curedPercent" label="治愈率" sortable>
+            </el-table-column>
+            <el-table-column prop="deadPercent" label="病死率" sortable>
+            </el-table-column>
+        </el-table>
+      </div>
+
+      <div style="width: 800px; height: 600px;  float: right; margin-left: 80px; margin-top: 20px">
+        <dv-border-box-12 style="width: 800px">
+            
+        </dv-border-box-12>
+      </div>
+    </el-container>
     </div>
     
 
@@ -40,7 +73,27 @@ export default {
         curNum: 0,          /// 现有确诊
         tolNum: 0,          /// 累计确诊
         cureNum: 0,         /// 累计治愈
-      }
+      },
+     //每个省的现况
+      countryInfo:[
+        {
+          Name: 'American',
+          curConfirmed: '111',
+          totConfirmed: '3223',
+          curedCount: '2200',
+          deadCount: '23',
+          curedPercent: '98%',
+          deadPercent: '2%',
+        }, {
+          Name: 'China',
+          curConfirmed: '121',
+          totConfirmed: '2223',
+          curedCount: '2200',
+          deadCount: '23',
+          curedPercent: '98%',
+          deadPercent: '2%',
+        }, 
+      ],
 
     }
   },
@@ -55,25 +108,7 @@ export default {
       let _dataArr_ = dataArr
       //初始化canvas节点
       let myChart = this.$echarts.init(document.getElementById('chart_example6'))
-      // //随机获取点点坐标函数
-      // let rodamData = function() {
-      //   let name = '随机点' + Math.random().toFixed(5) * 100000
-      //   // 终点经度
-      //   let longitude = 105.18
-      //   // 终点纬度
-      //   let latitude = 37.51
-      //   // 起点经度
-      //   let longitude2 = Math.random() * 360 - 180
-      //   // 起点纬度
-      //   let latitude2 = Math.random() * 180 - 90
-      //   return {
-      //     coords: [
-      //       [longitude2, latitude2],
-      //       [longitude, latitude]
-      //     ],
-      //     value: (Math.random() * 3000).toFixed(2)
-      //   }
-      // }
+      
       // 使用 echarts 绘制世界地图的实例作为纹理
       var canvas = document.createElement('canvas');
       var mapChart = this.$echarts.init(canvas, null, {
@@ -169,8 +204,9 @@ export default {
           x: 'center',
           y: 0,
           textStyle: {
-            color: '#fff',
-            fontSize: 25
+            color: '#96dee8',
+            fontSize: 25,
+            // font-family: 'zcool'
           }
         },
         tooltip: {
@@ -246,12 +282,15 @@ export default {
       }
       // 随机数据 i控制线数量
 
+
+
       //画图
       myChart.setOption(option)
       window.addEventListener('resize', function() {
         myChart.resize()
       })
     },
+
   },
   watch: {},
   created() {}
@@ -260,10 +299,55 @@ export default {
 
 <style lang="less" scoped>
 
+  .el-button {
+    background: transparent;
+    color: rgb(255, 255, 255);
+    font-weight: 1000;
+
+  }
+
+  .el-button:hover {
+    color:rgb(54, 173, 209)
+  }
+
+/deep/ .el-table {
+  background-color: transparent !important;
+  color: rgb(255, 255, 255)
+}
+/deep/ .el-table__row{
+  background-color: transparent !important;
+  color: rgb(255, 255, 255)
+}
+
+/deep/ .el-table th>.cell{
+  background-color: transparent !important;
+}
+
+/deep/ .el-table .el-table__header-wrapper tr th{
+  background-color: transparent !important;
+
+}
+/deep/ .el-table--enable-row-hover .el-table__body tr:hover>td{
+    color: rgb(0, 0, 0)
+}
+
+h3 {
+  font-family: zcool;
+  color: #96dee8;
+}
+
 h {
   color: rgb(23, 75, 110)
   #000c2d
   #f73f11,
-  #e6a939
+  #f5610b,
+  #ec510a
+  #eb723b
+    #f57032,
+  #f5a30b,
+  #ecc20a
+  #ebda3b
+    #d9db6b
+  #2cf503
 }
 </style>
