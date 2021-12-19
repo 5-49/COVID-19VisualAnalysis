@@ -55,6 +55,7 @@ import 'echarts/map/js/province/xinjiang'
 import 'echarts/map/js/province/xizang'
 import 'echarts/map/js/province/yunnan'
 import 'echarts/map/js/province/zhejiang'
+import moment from 'moment'
 
 
 
@@ -65,6 +66,7 @@ Vue.use(ElementUI);
 Vue.use(VueParticles)
 Vue.config.productionTip = false
 Vue.prototype.$http=axios
+Vue.use(moment)
 
 axios.defaults.baseURL = 'http://101.132.138.14:8082/'
 
