@@ -11,8 +11,8 @@
  
   <el-container>
     <!-- 两个重要数据展示 -->
-    <el-container direction="vertical">
-      <dv-decoration-12  style="width:330px;height:330px;margin-left:18px;">
+    <el-container direction="vertical" style="width:30%">
+      <dv-decoration-12  style="width:270px;height:270px;margin-left:18px;">
         <h1 class="text_headline" style="color: #00efff;  text-align: center;">
           现有确诊<br> {{this.cur_confi}} <br><br> 累计确诊<br> {{this.tot_confi}}
       </h1></dv-decoration-12>  
@@ -21,16 +21,16 @@
 
       <!-- 水位图 -->
       <el-container style="">
-        <dv-water-level-pond :config="cure_percent" style="width:150px;height:150px;margin-left:30px" />
-        <dv-water-level-pond :config="dead_percent" style="width:150px;height:150px;margin-left:30px" />
+        <dv-water-level-pond :config="cure_percent" style="width:100px;height:150px;margin-left:30px" />
+        <dv-water-level-pond :config="dead_percent" style="width:100px;height:150px;margin-left:30px" />
       </el-container>
     </el-container>
 
     <!-- 热力图 -->
-    <div id="CN_MapCharts" style="width:60%; height:600px;position:relative; left:-60px"></div>
+    <div id="CN_MapCharts" style="width:50%; height:500px;position:relative; left:-300px"></div>
   </el-container>
 
- <div class="d-flex jc-center">
+ <div class="d-flex jc-center" style="width:80%">
       <div class="title">
         <dv-decoration-6
           class="dv-dec-6"
@@ -64,12 +64,18 @@
       <!-- 这是表格 -->
       <div class="table-wrapper" style="width: 50%; margin-top:20px">
       <el-table
-          :data="provinInfo"
           :cell-style="cellStyle"
           @row-click="handleRowClick"
           size="mini"
+          :show-header="true"
+          :data="
+            provinInfo.slice(
+              (currentPage - 1) * pagesize,
+              currentPage * pagesize
+            )
+          "
         >
-          <el-table-column prop="Name" label="省名" >
+          <el-table-column prop="name" label="省名" >
           </el-table-column>
           <el-table-column prop="curConfirmed" label="现有确诊" sortable>
           </el-table-column>
@@ -84,6 +90,16 @@
           <el-table-column prop="deadPercent" label="病死率" sortable>
           </el-table-column>
         </el-table>
+        <el-pagination
+          small
+          layout="prev, pager, next"
+          :pager-count="7"
+          :total="total"
+          @current-change="current_change"
+          align="center"
+          style="padding-bottom: 15px"
+        >
+        </el-pagination>
       </div>
 
         <!-- 这是省详细数据展示 -->
@@ -109,33 +125,58 @@
 
   </el-container>
 
-  <!-- 这下面是实时新闻播报 -->
-  <div style="width: 25%"></div>
-
-
-
+ <!-- 这下面是实时新闻播报 -->
+  <div style="width: 20%">
+    <div class="news_container">
+        <span class="newstitle">实时播报</span>
+        <div v-for="(item,index) in list" :key="index">
+          <div class="newsList" v-for="(onenew,index) in item.news" :key="index">
+            <div class="dateList">
+              <div style="text-align: center; font-size: 14px;">{{onenew.pubDateStr}}</div>
+              <div style="text-align: center; font-size: 12px;">{{onenew.pubDate|dateForm}}</div>
+              <span class="dateItem"></span>
+            </div>
+            <div class="newsRight">
+              <div class="newsItemTitle">
+                <span class="newest" v-show="index==0">最新</span>
+                {{onenew.title}}
+              </div>
+              <a :href="onenew.sourceUrl" target="__blank" style="font-size: 12px;">{{onenew.summary}}</a>
+              <div style="text-align: right; font-size: 14px;">信息来源：{{onenew.infoSource}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
 </el-container>
 
 </div>
 </template>
 
 <script>
+import axios from 'axios'
+import moment from 'moment'
+
 export default{
   
   data(){
     return {
+      pagesize: 8, //一页展示的表格项数
+      currentPage: 1,
+      total: 40, //表格总项数
+
       "cure_percent":{
-        data: [93.1, 88],
+        data: [93.28, 88],
         shape: 'roundRect',
         waveHeight:'10'
       },
       "dead_percent":{
-        data: [4.4, 3],
+        data: [4.46, 3],
         shape: 'roundRect',
         waveHeight:'10'
       },
-      cur_confi:3150,//全国现有确诊数
-      tot_confi:128245,//全国累计确诊数
+      cur_confi:2880,//全国现有确诊数
+      tot_confi:127687,//全国累计确诊数
       chosen_provi:'山西',
 
       /////// 以下数据均需要后端获取 ///////
@@ -144,78 +185,57 @@ export default{
       city_cur_confi:[],//各市区现有确诊
       city_tot_confi:[],//各市区累计确诊
 
-      time_point:[  
-        "2021/9/11 12:00:00",
-        "2021/10/14 12:00:00",
-        "2021/11/17 12:00:00",
-        "2021/11/22 12:00:00",
-        "2021/12/04 12:00:00",
-      ],//存储数据的时间节点
-      nation_cur_confi:[
-        2361,2580,2794,2878,2150
-      ],//全国现有确诊的数量（按时间节点排成数组）
-      nation_cur_susp:[
-        361,580,794,878,150
-      ],//全国现有疑似的数量（按时间节点排成数组）
-      nation_tot_confi:[
-        122678,123920,124999,125888,126777
-      ],//全国累计确诊的数量（按时间节点排成数组）
-      nation_tot_cured:[
-        112678,113900,113999,115888,116000
-      ],//全国累计治愈的数量（按时间节点排成数组）
-      nation_tot_dead:[
-        5000,5100,5200,5300,5500
-      ],//全国累计死亡的数量（按时间节点排成数组）
+      CN_data:[{
+        "time": "2021-11-27T01:24:14.000+00:00",
+        "curConfirmed": 2865,
+        "curSuspected": 0,
+        "totConfirmed": 127672,
+        "curedCount": 119110,
+        "deadCount": 5697
+      }],
 
       //每个省的现况
       provinInfo:[
         {
-          Name: '山西',
+          name: '山西',
           curConfirmed: '111',
           totConfirmed: '3223',
           curedCount: '2200',
           deadCount: '23',
           curedPercent: '98%',
           deadPercent: '2%',
-        }, {
-          Name: '浙江',
-          curConfirmed: '121',
-          totConfirmed: '2223',
-          curedCount: '2200',
-          deadCount: '23',
-          curedPercent: '98%',
-          deadPercent: '2%',
-        }, 
+        }
       ],
+      list: Array
     }
   },
   methods: {
     cellStyle() {
       return "color:#96dee8";
     },
+    //分页栏
+    current_change: function (currentPage) {
+      this.currentPage = currentPage;
+    },
     handleRowClick(row){
-      console.log(row.Name)
-      this.chosen_provi = row.Name
+      this.chosen_provi = row.name
+      console.log(this.chosen_provi)
       this.drawProviGraph()
     },
     //初始化全球热力图配置
-    drawCNMap () {
-      this.provi_cur_confi = [
-        {name: '北京', value: 200}, 
-        {name: '四川', value: 800},
-        {name: '广西', value: 400}, 
-        {name: '内蒙古', value: 600},
-        {name: '安徽', value: 500}, 
-        {name: '云南', value: 300},
-        {name: '广东', value: 600}, 
-        {name: '黑龙江', value: 100},
-        {name: '青海', value: 500}, 
-        {name: '新疆', value: 300},
-        {name: '西藏', value: 600},
-        {name: '湖北', value: 300},
-        {name: '河南', value: 600}, 
-        {name: '湖南', value: 100},
-      ] // 该数据是从服务器获取到的数据
+    async drawCNMap () {
+      //获取全国各省的现有确诊provi_cur_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestAllProvinceNowCountDate', 
+        {params: 
+          { beginTime:'2021-11-27 00:00:00',
+            endTime:'2021-11-28 00:00:00' }
+        }
+      )
+      console.log(res)
+      this.provi_cur_confi = res.data
+      console.log(this.provi_cur_confi)
+
       let option = {
         tooltip: {
             trigger: 'item',
@@ -225,7 +245,7 @@ export default{
         },
         visualMap: {
             min: 0,
-            max: 1000,
+            max: 500,
             left: 'left',
             top: 'bottom',
             text: ['高', '低'],//取值范围的文字
@@ -288,24 +308,31 @@ export default{
       mychart.setOption(option)
     },
     //渲染热力图现有确诊数据
-    drawCNCurData(){
-      this.provi_cur_confi = [
-        {name: '北京', value: 200}, 
-        {name: '四川', value: 800},
-        {name: '广西', value: 400}, 
-        {name: '内蒙古', value: 600},
-        {name: '安徽', value: 500}, 
-        {name: '云南', value: 300},
-        {name: '广东', value: 600}, 
-        {name: '黑龙江', value: 100},
-        {name: '青海', value: 500}, 
-        {name: '新疆', value: 300},
-        {name: '西藏', value: 600},
-        {name: '湖北', value: 300},
-        {name: '河南', value: 600}, 
-        {name: '湖南', value: 100},
-      ] // 该数据是从服务器获取到的数据
+    async drawCNCurData(){
+      //获取全国各省的现有确诊provi_cur_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestAllProvinceNowCountDate', 
+        {params: 
+          { beginTime:'2021-11-27 00:00:00',
+            endTime:'2021-11-28 00:00:00' }
+        }
+      )
+      console.log(res)
+      this.provi_cur_confi = res.data
+      console.log(this.provi_cur_confi)
+
       let option = {
+        visualMap: {
+            min: 0,
+            max: 500,
+            left: 'left',
+            top: 'bottom',
+            text: ['高', '低'],//取值范围的文字
+            inRange: {
+              color: ['#ffffff','#009999']//取值范围的颜色
+            },
+            show: true//图注
+          },
           series: [
               {
               name: '信息量',
@@ -319,30 +346,31 @@ export default{
       mychart.setOption(option)
     },
     //渲染热力图累计确诊数据
-    drawCNTotData(){
-      this.provi_tot_confi = [
-        {name: '北京', value: 1000}, 
-        {name: '四川', value: 800},
-        {name: '广西', value: 400}, 
-        {name: '内蒙古', value: 600},
-        {name: '安徽', value: 500}, 
-        {name: '云南', value: 1000},
-        {name: '广东', value: 600}, 
-        {name: '黑龙江', value: 100},
-        {name: '青海', value: 500}, 
-        {name: '新疆', value: 500},
-        {name: '西藏', value: 1000},
-        {name: '湖北', value: 1000},
-        {name: '河南', value: 900}, 
-        {name: '湖南', value: 600},
-        {name: '甘肃', value: 1000},
-        {name: '陕西', value: 900}, 
-        {name: '山西', value: 600},
-        {name: '吉林', value: 1000},
-        {name: '辽宁', value: 900}, 
-        {name: '山东', value: 600},
-      ] // 该数据是从服务器获取到的数据
+    async drawCNTotData(){
+      //获取全国各省的累计确诊provi_tot_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestAllProvinceConfirmedDate', 
+        {params: 
+          { beginTime:'2020-1-27 00:00:00',
+            endTime:'2021-11-28 00:00:00' }
+        }
+      )
+      console.log(res)
+      this.provi_tot_confi = res.data
+      console.log(this.provi_tot_confi)
+
       let option = {
+        visualMap: {
+            min: 0,
+            max: 4000,
+            left: 'left',
+            top: 'bottom',
+            text: ['高', '低'],//取值范围的文字
+            inRange: {
+              color: ['#ffffff','#009999']//取值范围的颜色
+            },
+            show: true//图注
+          },
           series: [
               {
               name: '信息量',
@@ -356,11 +384,23 @@ export default{
       mychart.setOption(option)
     },
     //全国的两个折线图
-    drawCNLine(){
+    async drawCNLine(){
+      //获取全国各省的累计确诊provi_tot_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getChinaInformation', 
+        {params: 
+          { beginTime:'2021-9-27 00:00:00',
+            endTime:'2021-11-28 00:00:00' }
+        }
+      )
+      console.log(res)
+      this.CN_data = res.data
+      console.log(this.CN_data)
+
       let myChart0 = this.$echarts.init(this.$refs.cur_chart,'walden');
       let myChart1 = this.$echarts.init(this.$refs.tot_chart,'walden');
 
-    　myChart0.setOption({
+      myChart0.setOption({
       animationDuration: 10000,
         tooltip: {
             trigger: 'axis',
@@ -382,7 +422,9 @@ export default{
         },
         xAxis: {
             type: 'category',
-            data: this.time_point,
+            data: this.CN_data.map(function (item) {
+              return item.time;
+            }),
             boundaryGap: false
         },
         yAxis: {
@@ -404,20 +446,24 @@ export default{
         series: [
           { 
             name:'现存确诊',
-            data: this.nation_cur_confi,
+            data: this.CN_data.map(function (item) {
+              return item.curConfirmed;
+            }),
             symbol: 'none',
             type: 'line',
           },
           { 
             name:'现存疑似',
-            data: this.nation_cur_susp,
+            data: this.CN_data.map(function (item) {
+              return item.curSuspected;
+            }),
             symbol: 'none',
             type: 'line',
           }
         ]
         //结束
-      });
-  　　myChart1.setOption({
+      });　
+      myChart1.setOption({
       animationDuration: 10000,
       //图表开始
           tooltip: {
@@ -440,7 +486,9 @@ export default{
           },
           xAxis: {
               type: 'category',
-              data: this.time_point,
+              data: this.CN_data.map(function (item) {
+              return item.time;
+            }),
               boundaryGap: false
           },
           yAxis: {
@@ -461,19 +509,25 @@ export default{
           series: [
             { 
               name:'累计确诊',
-              data: this.nation_tot_confi,
+              data: this.CN_data.map(function (item) {
+              return item.totConfirmed;
+            }),
               symbol: 'none',
               type: 'line',
             },
             {
               name:'累计治愈',
-              data: this.nation_tot_cured,
+              data: this.CN_data.map(function (item) {
+              return item.curedCount;
+            }),
               symbol: 'none',
               type: 'line',
             },
             {
               name:'累计死亡',
-              data: this.nation_tot_dead,
+              data: this.CN_data.map(function (item) {
+              return item.deadCount;
+            }),
               symbol: 'none',
               type: 'line',
             }
@@ -482,14 +536,40 @@ export default{
           //结束
       　　});
     },
+    //初始化各省的table
+    async initTable(){
+      //获取全国各省的现有确诊provi_cur_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestAllProvinceDate', 
+        {params: 
+          { beginTime:'2021-9-27 00:00:00',
+            endTime:'2021-11-28 00:00:00' }
+        }
+      )
+      console.log(res)
+      this.provinInfo = res.data
+      console.log(this.provinInfo)
+    },
     //初始化每个省的热力图和柱状图
-    drawProviGraph(){
-      this.city_cur_confi=[
-        {name: '太原市', value: 130},
-        {name: '临汾市', value: 31},
-        {name: '大同市', value: 55},
-        {name: '运城市', value: 70},
-      ]
+    async drawProviGraph(){ 
+      //获取省内各城市的现有确诊city_cur_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestCityNowCount', 
+        {params: 
+          { beginTime:'2021-8-27 00:00:00',
+            endTime:'2021-11-28 00:00:00',
+            name: this.chosen_provi}
+        }
+      )
+      console.log(res)
+      this.city_cur_confi = res.data
+      console.log(this.city_cur_confi)
+
+      var i
+      for(i=0;i<this.city_cur_confi.length;i++){
+        this.city_cur_confi[i].name=this.city_cur_confi[i].name+'市'
+      }
+
       let map_option = {
         tooltip: {
             trigger: 'item',
@@ -499,7 +579,7 @@ export default{
         },
         dataRange: {
           min: 0,
-          max: 500,
+          max: 80,
           x: 'left',
           y: 'bottom',
           text: ['max', 'min'],
@@ -589,7 +669,31 @@ export default{
               normal: {
                   color: function(params) {
                     //注意，如果颜色太少的话，后面颜色不会自动循环，最好多定义几个颜色
-                      var colorList = ['#ddffff','#96dee8','#00ffff','#3fb1e3','#6be6c1','#009999'];
+                      var colorList = [
+                        '#ddffff',
+                        '#96dee8',
+                        '#00ffff',
+                        '#3fb1e3',
+                        '#6be6c1',
+                        '#009999',
+                        '#ddffff',
+                        '#96dee8',
+                        '#00ffff',
+                        '#3fb1e3',
+                        '#6be6c1',
+                        '#009999',
+                        '#ddffff',
+                        '#96dee8',
+                        '#00ffff',
+                        '#3fb1e3',
+                        '#6be6c1',
+                        '#009999',
+                        '#ddffff',
+                        '#96dee8',
+                        '#00ffff',
+                        '#3fb1e3',
+                        '#6be6c1',
+                        '#009999',];
                       return colorList[params.dataIndex]
                   }
               }
@@ -601,14 +705,38 @@ export default{
       myBarchart.setOption(bar_option)
     },
     //渲染省市热力图现有确诊数据
-    drawProvinCurData(){
-      this.city_cur_confi = [
-        {name: '太原市', value: 130},
-        {name: '临汾市', value: 31},
-        {name: '大同市', value: 55},
-        {name: '运城市', value: 70},
-      ] // 该数据是从服务器获取到的数据
+    async drawProvinCurData(){
+      //获取省内各城市的现有确诊city_cur_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestCityNowCount', 
+        {params: 
+          { beginTime:'2021-8-27 00:00:00',
+            endTime:'2021-11-28 00:00:00',
+            name: this.chosen_provi}
+        }
+      )
+      console.log(res)
+      this.city_cur_confi = res.data
+      console.log(this.city_cur_confi)
+
+      var i
+      for(i=0;i<this.city_cur_confi.length;i++){
+        this.city_cur_confi[i].name=this.city_cur_confi[i].name+'市'
+      }
+
+
       let map_option = {
+        dataRange: {
+          min: 0,
+          max: 80,
+          x: 'left',
+          y: 'bottom',
+          text: ['max', 'min'],
+          inRange: {
+              color: ['#ffffff','#009999']//取值范围的颜色
+          },
+          calculable: true
+        },
         series: [
           {
             name: '现存确诊',
@@ -631,7 +759,7 @@ export default{
             name: '现存确诊',
             type: 'bar',
             data: this.city_cur_confi.map(function (item) {
-            return item.value;
+              return item.value;
             })
           },
         ]
@@ -640,15 +768,38 @@ export default{
       myBarchart.setOption(bar_option)
     },
     //渲染省市热力图累计确诊数据
-    drawProvinTotData(){
-      this.city_tot_confi = [
-        {name: '太原市', value: 430},
-        {name: '临汾市', value: 361},
-        {name: '大同市', value: 555},
-        {name: '运城市', value: 700},
-        {name: '长治市', value: 600},
-      ] // 该数据是从服务器获取到的数据
+    async drawProvinTotData(){
+      //获取省内各城市的累计确诊city_tot_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestCityConfirmedCount', 
+        {params: 
+          { beginTime:'2021-8-27 00:00:00',
+            endTime:'2021-11-28 00:00:00',
+            name: this.chosen_provi
+          }
+        }
+      )
+      console.log(res)
+      this.city_tot_confi = res.data
+      console.log(this.city_tot_confi)
+
+      var i
+      for(i=0;i<this.city_tot_confi.length;i++){
+        this.city_tot_confi[i].name=this.city_tot_confi[i].name+'市'
+      }
+
       let map_option = {
+        dataRange: {
+          min: 0,
+          max: 300,
+          x: 'left',
+          y: 'bottom',
+          text: ['max', 'min'],
+          inRange: {
+              color: ['#ffffff','#009999']//取值范围的颜色
+          },
+          calculable: true
+        },
         series: [
           {
             name: '现存确诊',
@@ -679,11 +830,33 @@ export default{
       let myBarchart = this.$echarts.init(document.getElementById('provin_BarCharts'))
       myBarchart.setOption(bar_option)
     },
+    //获取新闻数据
+    getNews () {
+      axios({
+        url: 'http://api.tianapi.com/ncov/index',
+        method: 'get',
+        params:{
+          key: '2f3865d193ed10d014d38fd729aa172a'
+        }
+      })
+      .then(res => {
+        this.list=res.data.newslist
+        console.log(this.list)
+      })
+    }
+  },
+  //转换时间戳
+  filters:{
+    dateForm:function (el) {
+      return moment(el).format('YYYY-MM-DD HH:mm:ss');
+    }
   },
   mounted(){
+    this,this.initTable()
     this.drawCNMap() // 在页面进入的时候，先请求后端数据再调用这个函数，但由于我这里是写死的假数据，于是就直接调用了
     this.drawCNLine()
     this.drawProviGraph()
+    this.getNews()
   },
 }
 
@@ -724,4 +897,98 @@ export default{
 .el-container .el-table::before {
   height: 0;
 }
+a {
+  text-decoration: none;
+  color: white;
+}
+.news_container {
+  width: 20%;
+  height: calc(100% - 60px);
+  position: fixed;
+  top: 70px;
+  bottom: 0;
+  right: 0;
+  background: #152c4c99;
+  color: white;
+  z-index: 1;
+  overflow-y: auto;
+}
+.newstitle {
+  display: inline-block;
+  width: 100%;
+  font-size: 18px;
+  height: 40px;
+  line-height: 40px;
+  font-weight: bold;
+  padding-left: 20px;
+}
+.newsList {
+  position: relative;
+  display: flex;
+}
+.dateList {
+  width: 30%;
+  flex: none;
+  transform: translateY(0.08rem);
+  border-right: 1px solid #ebebeb;
+}
+.dateItem {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: wheat;
+  position: absolute;
+  right: -5px;
+  top: -2px;
+  border-radius: 50%;
+}
+.newsItemTitle {
+  font-weight: bold;
+  font-size: 14px;
+}
+.newsRight {
+  width: 70%;
+  padding-left: 10px;
+  padding-bottom: 20px;
+  padding-right: 10px;
+}
+.newest {
+  display: inline-block;
+  width: 30px;
+  height: 20px;
+  background: red;
+  text-align: center;
+  border-radius: 2px;
+  line-height: 20px;
+}
+
+/* 滚动条样式开始 */
+/* ----chrome---- */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* ----chrome---- */
+/* ----firefox---- */
+* {
+  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1);
+  scrollbar-width: thin;
+}
+
+/* ----firefox---- */
+/* edge、ie暂未找到解决方案，或者可以使用js库来进行优化 */
+/* 滚动条样式结束 */
 </style>

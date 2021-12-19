@@ -34,7 +34,7 @@
     "Chile": "智利",
     "China": "中国",
     "Colombia": "哥伦比亚",
-    "Congo": "刚果",
+    "Congo": "刚果（金）",
     "Costa Rica": "哥斯达黎加",
     "Côte d'Ivoire": "科特迪瓦",
     "Croatia": "克罗地亚",
@@ -42,7 +42,7 @@
     "Cyprus": "塞浦路斯",
     "Czech Rep.": "捷克共和国",
     "Dem. Rep. Korea": "韩国",
-    "Dem. Rep. Congo": "民主刚果",
+    "Dem. Rep. Congo": "刚果（布）",
     "Denmark": "丹麦",
     "Djibouti": "吉布提",
     "Dominican Rep.": "多米尼加共和国",
@@ -186,8 +186,8 @@
     "Vietnam": "越南",
     "West Bank": "西岸",
     "W. Sahara": "西撒哈拉",
-    "Yemen": "也门",
-    "Zambia": "赞比亚",
+    "Yemen": "也门共和国",
+    "Zambia": "赞比亚共和国",
     "Zimbabwe": "津巴布韦"
   },
   "dataArr": [
@@ -708,7 +708,7 @@
       "value": 173149.306
     },
     {
-      "name": "刚果共和国",
+      "name": "刚果（布）",
       "value": 3678.128
     },
     {

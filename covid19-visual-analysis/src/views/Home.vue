@@ -3,32 +3,25 @@
     <div class="bg">
       <div class="bg_after">
         <div style="margin:10px;">
-          <el-container style="position:relative; margin-bottom: 30px">
-            <dv-decoration-7 style="height:30px;">
-              <el-button type="text" class="header_text" @click="Jump2World" style="font-size:22px">
+          <el-container style="position:relative; margin-bottom: 30px; text-align:center">
+            <dv-decoration-7 style="height:30px;width:25%;">
+              <el-button type="text" class="header_text" @click="Jump2World" style="font-size:22px;width:50%" >
                 世界
               </el-button>
             </dv-decoration-7>
-            <dv-decoration-7 style="height:30px;">
-              <el-button type="text" class="header_text" @click="Jump2China" style="font-size:22px">
+            <dv-decoration-7 style="height:30px;width:25%">
+              <el-button type="text" class="header_text" @click="Jump2China" style="font-size:22px;width:50%">
                 中国
               </el-button>
             </dv-decoration-7>
-            <dv-decoration-7 style="height:30px;">
-              <el-button type="text" class="header_text" @click="Refresh" style="font-size:22px">
+            <dv-decoration-7 style="height:30px;width:45%">
+              <div type="text" class="header_text"  style="font-size:22px; text-align:center;width:50%">
                 {{ nowDate }}{{ nowTime }}
-              </el-button>
+              </div>
             </dv-decoration-7>
           </el-container>
-            <!-- <el-breadcrumb separator="|" style="margin-bottom:30px;margin-left:15px;">
-              <el-breadcrumb-item :to="{ path: '/world' }">世界</el-breadcrumb-item>
-              <el-breadcrumb-item :to="{ path: '/china' }">中国</el-breadcrumb-item>
-              <el-breadcrumb-item :to="{ path: '/demo' }">预测</el-breadcrumb-item>
-            </el-breadcrumb>-->
-
             <!--路由占位符-->
             <router-view></router-view>
-
         </div>
 
         <div style="height:80px"></div>
@@ -192,4 +185,98 @@ export default{
   font-size: 25px;
   width: 450px;
 }
+a {
+  text-decoration: none;
+  color: white;
+}
+.news_container {
+  width: 25%;
+  height: calc(100% - 60px);
+  position: fixed;
+  top: 80px;
+  bottom: 0;
+  right: 0;
+  background: #152c4c99;
+  color: white;
+  z-index: 1;
+  overflow-y: auto;
+}
+.newstitle {
+  display: inline-block;
+  width: 100%;
+  font-size: 18px;
+  height: 40px;
+  line-height: 40px;
+  font-weight: bold;
+  padding-left: 20px;
+}
+.newsList {
+  position: relative;
+  display: flex;
+}
+.dateList {
+  width: 30%;
+  flex: none;
+  transform: translateY(0.08rem);
+  border-right: 1px solid #ebebeb;
+}
+.dateItem {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: wheat;
+  position: absolute;
+  right: -5px;
+  top: -2px;
+  border-radius: 50%;
+}
+.newsItemTitle {
+  font-weight: bold;
+  font-size: 14px;
+}
+.newsRight {
+  width: 70%;
+  padding-left: 10px;
+  padding-bottom: 20px;
+  padding-right: 10px;
+}
+.newest {
+  display: inline-block;
+  width: 30px;
+  height: 20px;
+  background: red;
+  text-align: center;
+  border-radius: 2px;
+  line-height: 20px;
+}
+
+/* 滚动条样式开始 */
+/* ----chrome---- */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* ----chrome---- */
+/* ----firefox---- */
+* {
+  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1);
+  scrollbar-width: thin;
+}
+
+/* ----firefox---- */
+/* edge、ie暂未找到解决方案，或者可以使用js库来进行优化 */
+/* 滚动条样式结束 */
 </style>
