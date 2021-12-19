@@ -120,22 +120,60 @@
 </template>
 
 <script>
+const areaMap = {
+    world: "globe",
+    china: "china",
+    "湖北省": "hubei",
+    "北京市": "beijing",
+    "天津市": "tianjin",
+    "上海市": "shanghai",
+    "重庆市": "chongqing",
+    "黑龙江省": "heilongjiang",
+    "吉林省": "jilin",
+    "辽宁省": "liaoning",
+    "河北省": "hebei",
+    "山东省": "shandong",
+    "河南省": "henan",
+    "山西省": "shanxi",
+    "陕西省": "shaanxi",
+    "宁夏回族自治区": "ningxia",
+    "内蒙古自治区": "neimenggu",
+    "甘肃省": "gansu",
+    "新疆维吾尔自治区": "xinjiang",
+    "西藏自治区": "xizang",
+    "江苏省": "jiangsu",
+    "安徽省": "anhui",
+    "四川省": "sichuan",
+    "浙江省": "zhejiang",
+    "江西省": "jiangxi",
+    "湖南省": "hunan",
+    "贵州省": "guizhou",
+    "云南省": "yunnan",
+    "广东省": "guangdong",
+    "广西壮族自治区": "guangxi",
+    "海南省": "hainan",
+    "福建省": "fujian",
+    "台湾省": "taiwan",
+    "青海省": "qinghai",
+    "香港特别行政区": "xianggang",
+    "澳门特别行政区": "aomen",
+}
 export default{
   
   data(){
     return {
       "cure_percent":{
-        data: [93.1, 88],
+        data: [93.28, 88],
         shape: 'roundRect',
         waveHeight:'10'
       },
       "dead_percent":{
-        data: [4.4, 3],
+        data: [4.46, 3],
         shape: 'roundRect',
         waveHeight:'10'
       },
-      cur_confi:3150,//全国现有确诊数
-      tot_confi:128245,//全国累计确诊数
+      cur_confi:2880,//全国现有确诊数
+      tot_confi:127687,//全国累计确诊数
       chosen_provi:'山西',
 
       /////// 以下数据均需要后端获取 ///////
@@ -143,6 +181,15 @@ export default{
       provi_tot_confi:[],//各省份累计确诊
       city_cur_confi:[],//各市区现有确诊
       city_tot_confi:[],//各市区累计确诊
+
+      CN_data:[{
+        "time": "2021-11-27T01:24:14.000+00:00",
+        "curConfirmed": 2865,
+        "curSuspected": 0,
+        "totConfirmed": 127672,
+        "curedCount": 119110,
+        "deadCount": 5697
+      }],
 
       time_point:[  
         "2021/9/11 12:00:00",
@@ -195,27 +242,24 @@ export default{
     },
     handleRowClick(row){
       console.log(row.name)
-      this.chosen_provi = row.name
+      this.chosen_provi = row.name.substr(0, row.name.length - 1)
+      console.log(this.chosen_provi)
       this.drawProviGraph()
     },
     //初始化全球热力图配置
-    drawCNMap () {
-      this.provi_cur_confi = [
-        {name: '北京', value: 200}, 
-        {name: '四川', value: 800},
-        {name: '广西', value: 400}, 
-        {name: '内蒙古', value: 600},
-        {name: '安徽', value: 500}, 
-        {name: '云南', value: 300},
-        {name: '广东', value: 600}, 
-        {name: '黑龙江', value: 100},
-        {name: '青海', value: 500}, 
-        {name: '新疆', value: 300},
-        {name: '西藏', value: 600},
-        {name: '湖北', value: 300},
-        {name: '河南', value: 600}, 
-        {name: '湖南', value: 100},
-      ] // 该数据是从服务器获取到的数据
+    async drawCNMap () {
+      //获取全国各省的现有确诊provi_cur_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestAllProvinceNowCountDate', 
+        {params: 
+          { beginTime:'2021-11-27 00:00:00',
+            endTime:'2021-11-28 00:00:00' }
+        }
+      )
+      console.log(res)
+      this.provi_cur_confi = res.data
+      console.log(this.provi_cur_confi)
+
       let option = {
         tooltip: {
             trigger: 'item',
@@ -225,7 +269,7 @@ export default{
         },
         visualMap: {
             min: 0,
-            max: 1000,
+            max: 500,
             left: 'left',
             top: 'bottom',
             text: ['高', '低'],//取值范围的文字
@@ -288,24 +332,31 @@ export default{
       mychart.setOption(option)
     },
     //渲染热力图现有确诊数据
-    drawCNCurData(){
-      this.provi_cur_confi = [
-        {name: '北京', value: 200}, 
-        {name: '四川', value: 800},
-        {name: '广西', value: 400}, 
-        {name: '内蒙古', value: 600},
-        {name: '安徽', value: 500}, 
-        {name: '云南', value: 300},
-        {name: '广东', value: 600}, 
-        {name: '黑龙江', value: 100},
-        {name: '青海', value: 500}, 
-        {name: '新疆', value: 300},
-        {name: '西藏', value: 600},
-        {name: '湖北', value: 300},
-        {name: '河南', value: 600}, 
-        {name: '湖南', value: 100},
-      ] // 该数据是从服务器获取到的数据
+    async drawCNCurData(){
+      //获取全国各省的现有确诊provi_cur_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestAllProvinceNowCountDate', 
+        {params: 
+          { beginTime:'2021-11-27 00:00:00',
+            endTime:'2021-11-28 00:00:00' }
+        }
+      )
+      console.log(res)
+      this.provi_cur_confi = res.data
+      console.log(this.provi_cur_confi)
+
       let option = {
+        visualMap: {
+            min: 0,
+            max: 500,
+            left: 'left',
+            top: 'bottom',
+            text: ['高', '低'],//取值范围的文字
+            inRange: {
+              color: ['#ffffff','#009999']//取值范围的颜色
+            },
+            show: true//图注
+          },
           series: [
               {
               name: '信息量',
@@ -319,30 +370,31 @@ export default{
       mychart.setOption(option)
     },
     //渲染热力图累计确诊数据
-    drawCNTotData(){
-      this.provi_tot_confi = [
-        {name: '北京', value: 1000}, 
-        {name: '四川', value: 800},
-        {name: '广西', value: 400}, 
-        {name: '内蒙古', value: 600},
-        {name: '安徽', value: 500}, 
-        {name: '云南', value: 1000},
-        {name: '广东', value: 600}, 
-        {name: '黑龙江', value: 100},
-        {name: '青海', value: 500}, 
-        {name: '新疆', value: 500},
-        {name: '西藏', value: 1000},
-        {name: '湖北', value: 1000},
-        {name: '河南', value: 900}, 
-        {name: '湖南', value: 600},
-        {name: '甘肃', value: 1000},
-        {name: '陕西', value: 900}, 
-        {name: '山西', value: 600},
-        {name: '吉林', value: 1000},
-        {name: '辽宁', value: 900}, 
-        {name: '山东', value: 600},
-      ] // 该数据是从服务器获取到的数据
+    async drawCNTotData(){
+      //获取全国各省的累计确诊provi_tot_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestAllProvinceConfirmedDate', 
+        {params: 
+          { beginTime:'2020-1-27 00:00:00',
+            endTime:'2021-11-28 00:00:00' }
+        }
+      )
+      console.log(res)
+      this.provi_tot_confi = res.data
+      console.log(this.provi_tot_confi)
+
       let option = {
+        visualMap: {
+            min: 0,
+            max: 4000,
+            left: 'left',
+            top: 'bottom',
+            text: ['高', '低'],//取值范围的文字
+            inRange: {
+              color: ['#ffffff','#009999']//取值范围的颜色
+            },
+            show: true//图注
+          },
           series: [
               {
               name: '信息量',
@@ -356,7 +408,19 @@ export default{
       mychart.setOption(option)
     },
     //全国的两个折线图
-    drawCNLine(){
+    async drawCNLine(){
+      //获取全国各省的累计确诊provi_tot_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getChinaInformation', 
+        {params: 
+          { beginTime:'2021-9-27 00:00:00',
+            endTime:'2021-11-28 00:00:00' }
+        }
+      )
+      console.log(res)
+      this.CN_data = res.data
+      console.log(this.CN_data)
+
       let myChart0 = this.$echarts.init(this.$refs.cur_chart,'walden');
       let myChart1 = this.$echarts.init(this.$refs.tot_chart,'walden');
 
@@ -382,7 +446,9 @@ export default{
         },
         xAxis: {
             type: 'category',
-            data: this.time_point,
+            data: this.CN_data.map(function (item) {
+              return item.time;
+            }),
             boundaryGap: false
         },
         yAxis: {
@@ -404,13 +470,17 @@ export default{
         series: [
           { 
             name:'现存确诊',
-            data: this.nation_cur_confi,
+            data: this.CN_data.map(function (item) {
+              return item.curConfirmed;
+            }),
             symbol: 'none',
             type: 'line',
           },
           { 
             name:'现存疑似',
-            data: this.nation_cur_susp,
+            data: this.CN_data.map(function (item) {
+              return item.curSuspected;
+            }),
             symbol: 'none',
             type: 'line',
           }
@@ -440,7 +510,9 @@ export default{
           },
           xAxis: {
               type: 'category',
-              data: this.time_point,
+              data: this.CN_data.map(function (item) {
+              return item.time;
+            }),
               boundaryGap: false
           },
           yAxis: {
@@ -461,19 +533,25 @@ export default{
           series: [
             { 
               name:'累计确诊',
-              data: this.nation_tot_confi,
+              data: this.CN_data.map(function (item) {
+              return item.totConfirmed;
+            }),
               symbol: 'none',
               type: 'line',
             },
             {
               name:'累计治愈',
-              data: this.nation_tot_cured,
+              data: this.CN_data.map(function (item) {
+              return item.curedCount;
+            }),
               symbol: 'none',
               type: 'line',
             },
             {
               name:'累计死亡',
-              data: this.nation_tot_dead,
+              data: this.CN_data.map(function (item) {
+              return item.deadCount;
+            }),
               symbol: 'none',
               type: 'line',
             }
@@ -481,6 +559,20 @@ export default{
           ]
           //结束
       　　});
+    },
+    //初始化各省的table
+    async initTable(){
+      //获取全国各省的现有确诊provi_cur_confi
+      const { data: res } =await this.$http.
+        get('/countryGeographyInformation/getNewestAllProvinceDate', 
+        {params: 
+          { beginTime:'2021-11-27 00:00:00',
+            endTime:'2021-11-28 00:00:00' }
+        }
+      )
+      console.log(res)
+      this.provinInfo = res.data
+      console.log(this.provinInfo)
     },
     //初始化每个省的热力图和柱状图
     drawProviGraph(){
@@ -631,7 +723,7 @@ export default{
             name: '现存确诊',
             type: 'bar',
             data: this.city_cur_confi.map(function (item) {
-            return item.value;
+              return item.value;
             })
           },
         ]
@@ -681,6 +773,7 @@ export default{
     },
   },
   mounted(){
+    this,this.initTable()
     this.drawCNMap() // 在页面进入的时候，先请求后端数据再调用这个函数，但由于我这里是写死的假数据，于是就直接调用了
     this.drawCNLine()
     this.drawProviGraph()
