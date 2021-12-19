@@ -9,7 +9,7 @@
         <h3>全球现存确诊：100</h3>
         <h3>全球累计死亡：100</h3>
         </dv-border-box-8>
-        <el-button @click="getTotalConfirmedEachNation">测试接口</el-button>
+        <!-- < @click="getEachNationInfo">测试接口<//el-button> -->
         <dv-border-box-1 style="width:400px;height: 300px; margin-left: 50px; margin-bottom: 30px">
           <div v-if="curCountry.countryName != ''" style="margin-left: 50px">
             <h2 style="color: #96dee8;">{{curCountry.countryName}}</h2>
@@ -24,7 +24,7 @@
 
         <dv-decoration-9 style="width:150px; height:150px; margin-left: 150px">
           <dv-decoration-6 v-if="curCountry.countryName == ''" style="width: 50px; height: 50px; position: relative; left: 0%"/>
-          <span v-else style="font-family: zcool; color: #96dee8; font-size: 24px">{{curCountry.cureNum / 1000}}</span>
+          <span v-else style="font-family: zcool; color: #96dee8; font-size: 24px">{{curCountry.curedRate}}</span>
         </dv-decoration-9>
       </el-container>
 
@@ -50,15 +50,15 @@
       <!-- 左边：表格展示 -->
       <el-container class="table-wrapper" style="width: 50%; margin-top:80px; margin-left: 10px;">
         <el-table
-            :data="countryInfo"
+            :data="top10Country"
             @row-click="handleRowClick"
             size="mini"
           >
             <el-table-column prop="name" label="国家" >
             </el-table-column>
-            <el-table-column prop="curConfirmed" label="现有确诊" sortable>
-            </el-table-column>
             <el-table-column prop="totConfirmed" label="累计确诊" sortable>
+            </el-table-column>
+            <el-table-column prop="curConfirmed" label="现有确诊" sortable>
             </el-table-column>
             <el-table-column prop="curedCount" label="治愈人数" sortable>
             </el-table-column>
@@ -96,41 +96,38 @@ export default {
         curNum: 0,          /// 现有确诊
         tolNum: 0,          /// 累计确诊
         cureNum: 0,         /// 累计治愈
+        curedRate: ''       /// 治愈率
       },
-      eachCountryTolConfirmed: [],          /// 各个国家累计确诊
-      eachCountryCurConfirmed: [],          /// 各个国家现存确诊
-     //每个省的现况
-      countryInfo:[
-        {
-          name: 'America',
-          curConfirmed: '111',
-          totConfirmed: '3223',
-          curedCount: '2200',
-          deadCount: '23',
-          curedPercent: '98%',
-          deadPercent: '2%',
-        }, {
-          name: 'China',
-          curConfirmed: '121',
-          totConfirmed: '2223',
-          curedCount: '2200',
-          deadCount: '23',
-          curedPercent: '98%',
-          deadPercent: '2%',
-        },
-      ],
-      top10Data: {
-        
-      },
+      eachCountryInfo:[],                   /// 各个国家各种信息
+      top10Country: [],
       selectedCountry: ''
     }
   },
   mounted() {
-    this.getCurConfirmedEachNation()
-    this.getTotalConfirmedEachNation()
+    this.getEachNationInfo()
+    
     
   },
   methods: {
+
+    getEachNationInfo() {
+      let self = this
+      this.$http({
+        method: 'get',
+        url: 'http://101.132.138.14:8082/globalCountry/getAllCountryData',
+        params: {
+          beginTime: '2021-11-24 17:00:00',
+          endTime: '2021-11-24 17:00:00'
+        }
+      }).then(response => {
+        console.log(response.data.data)
+        self.eachCountryInfo = response.data.data
+        this.initData()
+        for(var i = 0; i < 10; i++){
+          self.top10Country.push(self.eachCountryInfo[i])
+        }
+      })
+    },
     handleRowClick(row) {
       // console.log(row)
       this.selectedCountry = row.name
@@ -231,33 +228,7 @@ export default {
       
       let self = this
      	let _nameMap_ = nameMap
-      let _dataArr_ = [
-        {
-          "name": "根西岛",
-          "value": 3406,
-          "value2": 3406
-        },
-        {
-          "name": "中国",
-          "value": 127602,
-          "value2": 3406
-        },
-        {
-          "name": "日本",
-          "value": 1726624,
-          "value2": 3406
-        },
-        {
-          "name": "韩国",
-          "value": 425065,
-          "value2": 3406
-        },
-        {
-          "name": "缅甸",
-          "value": 519102,
-          "value2": 3406
-        },
-      ]
+     
       //初始化canvas节点
       let myChart = this.$echarts.init(document.getElementById('chart_example6'),'walden')
       
@@ -334,7 +305,16 @@ export default {
               // 自定义地区的名称映射
               nameMap: _nameMap_,
               // 地图系列中的数据内容数组 数组项可以为单个数值
-              data: _dataArr_
+              data: this.eachCountryInfo.map(item => {
+                return {
+                  'name': item.name, 
+                  'value': item.totConfirmed,
+                  'curConfirmed': item.curConfirmed,
+                  'curedCount': item.curedCount,
+                  'curedRate': item.curedPercent,
+                  'deadCount': item.deadCount
+                }
+              })
             }
           ]
       });
@@ -342,12 +322,13 @@ export default {
         // console.log(params.data.name)  //这里的params是鼠标悬浮的图表节点的数据
         
         try{
+          console.log(params.data.curedRate)
           self.curCountry.countryName = params.data.name
-          /// 下面是瞎写的
+          
           self.curCountry.curNum      = params.data.curConfirmed
-          self.curCountry.tolNum      = params.data.totalConfirmed
-          self.curCountry.cureNum     = params.data.deadCount
-          self.curCountry.cureRate    = params.data.curedRate
+          self.curCountry.tolNum      = params.data.value
+          self.curCountry.cureNum     = params.data.curedCount
+          self.curCountry.curedRate   = params.data.curedRate
         }catch{
           self.curCountry.countryName = ''
           return
@@ -513,39 +494,6 @@ export default {
         myChart.resize()
       })
     },
-    /// 获取全球各国累计确诊
-    getTotalConfirmedEachNation() {
-      var start_time  = '2021-11-24 17:00:00'
-      var end_time    = '2021-11-24 17:00:00'
-      this.$http({
-        method: 'get',
-        url: 'http://101.132.138.14:8082/globalCountry/getCountryConfirmCount',
-        params: {
-          beginTime: start_time,
-          endTime: end_time
-        }
-      }).then(response => {
-        console.log(response.data.data[0].data)
-        this.eachCountryTolConfirmed = response.data.data[0].data
-        this.initData()
-      })
-    },
-    getCurConfirmedEachNation() {
-      var start_time  = '2021-11-24 17:00:00'
-      var end_time    = '2021-11-24 17:00:00'
-      this.$http({
-        method: 'get',
-        url: 'http://101.132.138.14:8082/globalCountry/getCountryNowCount',
-        params: {
-          beginTime: start_time,
-          endTime: end_time
-        }
-      }).then(response => {
-        console.log(response.data.data[0].data)
-        this.eachCountryCurConfirmed = response.data.data[0].data
-      })
-    }
-
   },
   watch: {},
   created() {}
