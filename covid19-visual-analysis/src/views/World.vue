@@ -42,7 +42,7 @@
           <div class="newsList" v-for="(onenew,index) in item.news" :key="index">
             <div class="dateList">
               <div style="text-align: center; font-size: 14px;">{{onenew.pubDateStr}}</div>
-              <div style="text-align: center; font-size: 12px;">{{onenew.pubDate}}</div>
+              <div style="text-align: center; font-size: 12px;">{{onenew.pubDate|dateForm}}</div>
               <span class="dateItem"></span>
             </div>
             <div class="newsRight">
@@ -104,6 +104,8 @@ import {earthBaseTexture} from '../assets/earthBaseTexture.js'
 import {nameMap} from '../assets/world.json'
 import {dataArr} from '../assets/world.json'
 import axios from 'axios'
+import moment from 'moment'
+import predictData from '../../public/predict.json'
 export default {
   data() {
     return {
@@ -147,6 +149,7 @@ export default {
   mounted() {
     this.initData()
     this.getNews()
+    this.getPredict()
   },
   methods: {
     handleRowClick(row) {
@@ -512,6 +515,16 @@ export default {
         this.list=res.data.newslist
         console.log(this.list)
       })
+    },
+    //获取预测数据
+    getPredict(){
+      this.predict=predictData.predictData
+    }
+  },
+  //转换时间戳
+  filters:{
+    dateForm:function (el) {
+      return moment(el).format('YYYY-MM-DD HH:mm:ss');
     }
   },
   watch: {},

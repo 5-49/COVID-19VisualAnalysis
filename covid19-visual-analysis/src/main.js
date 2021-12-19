@@ -24,6 +24,11 @@ echarts.registerMap('china', china)
 import 'echarts/map/js/province/shanxi'
 import 'echarts/map/js/province/zhejiang'
 
+//导入时间戳转换
+import moment from 'moment'
+
+import predictData from '../public/predict.json'
+
 Vue.config.productionTip = false
 Vue.use(dataV)
 Vue.prototype.$echarts = echarts;
@@ -31,6 +36,8 @@ Vue.use(ElementUI);
 Vue.use(VueParticles)
 Vue.config.productionTip = false
 Vue.prototype.$http=axios
+Vue.use(moment)
+Vue.use(predictData)
 
 axios.defaults.baseURL = 'http://101.132.138.14:8082/'
 

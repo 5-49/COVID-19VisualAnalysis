@@ -1,15 +1,6 @@
 <template>
   <div>
     <div id="CN_MapCharts" style="width:800px; height:500px;"></div>
-    <div class="list">
-      <div class="item" v-for="(item,index) in list" :key="index">
-        <div class="time" v-for="(onenew,index) in item.news" :key="index">
-            {{ onenew.title }}
-            <br>
-            <br>
-        </div>
-      </div>
-    </div>
     <div class="container">
       <span class="newstitle">实时播报</span>
       <div v-for="(item,index) in list" :key="index">
@@ -30,15 +21,24 @@
         </div>
       </div>
     </div>
+    <div v-for="(country,index) in predict" :key="index">
+      <span v-if="country.name === '美国'">
+        {{parseInt(country.data[0])}}
+      </span>
+      <br>
+      <br>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import predictData from '../../public/predict.json'
 export default{
   data() {
     return {
-      list: Array
+      list: Array,
+      predict: Array
     };
   },
   methods: {
@@ -181,11 +181,15 @@ export default{
         this.list=res.data.newslist
         console.log(this.list)
       })
+    },
+    getPredict(){
+      this.predict=predictData.predictData
     }
   },
   mounted(){
     this.drawCNMap() 
     this.getNews()
+    this.getPredict()
   }
 }
 </script>
