@@ -69,7 +69,7 @@
           @row-click="handleRowClick"
           size="mini"
         >
-          <el-table-column prop="Name" label="省名" >
+          <el-table-column prop="name" label="省名" >
           </el-table-column>
           <el-table-column prop="curConfirmed" label="现有确诊" sortable>
           </el-table-column>
@@ -170,7 +170,7 @@ export default{
       //每个省的现况
       provinInfo:[
         {
-          Name: '山西',
+          name: '山西',
           curConfirmed: '111',
           totConfirmed: '3223',
           curedCount: '2200',
@@ -178,7 +178,7 @@ export default{
           curedPercent: '98%',
           deadPercent: '2%',
         }, {
-          Name: '浙江',
+          name: '浙江',
           curConfirmed: '121',
           totConfirmed: '2223',
           curedCount: '2200',
@@ -194,8 +194,8 @@ export default{
       return "color:#96dee8";
     },
     handleRowClick(row){
-      console.log(row.Name)
-      this.chosen_provi = row.Name
+      console.log(row.name)
+      this.chosen_provi = row.name
       this.drawProviGraph()
     },
     //初始化全球热力图配置
@@ -360,7 +360,7 @@ export default{
       let myChart0 = this.$echarts.init(this.$refs.cur_chart,'walden');
       let myChart1 = this.$echarts.init(this.$refs.tot_chart,'walden');
 
-    　myChart0.setOption({
+      myChart0.setOption({
       animationDuration: 10000,
         tooltip: {
             trigger: 'axis',
@@ -416,8 +416,8 @@ export default{
           }
         ]
         //结束
-      });
-  　　myChart1.setOption({
+      });　
+      myChart1.setOption({
       animationDuration: 10000,
       //图表开始
           tooltip: {
