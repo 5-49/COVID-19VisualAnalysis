@@ -148,9 +148,6 @@
         </div>
       </div>
   </div>
-
-
-
 </el-container>
 
 </div>
@@ -159,44 +156,7 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
-const areaMap = {
-    world: "globe",
-    china: "china",
-    "湖北省": "hubei",
-    "北京市": "beijing",
-    "天津市": "tianjin",
-    "上海市": "shanghai",
-    "重庆市": "chongqing",
-    "黑龙江省": "heilongjiang",
-    "吉林省": "jilin",
-    "辽宁省": "liaoning",
-    "河北省": "hebei",
-    "山东省": "shandong",
-    "河南省": "henan",
-    "山西省": "shanxi",
-    "陕西省": "shaanxi",
-    "宁夏回族自治区": "ningxia",
-    "内蒙古自治区": "neimenggu",
-    "甘肃省": "gansu",
-    "新疆维吾尔自治区": "xinjiang",
-    "西藏自治区": "xizang",
-    "江苏省": "jiangsu",
-    "安徽省": "anhui",
-    "四川省": "sichuan",
-    "浙江省": "zhejiang",
-    "江西省": "jiangxi",
-    "湖南省": "hunan",
-    "贵州省": "guizhou",
-    "云南省": "yunnan",
-    "广东省": "guangdong",
-    "广西壮族自治区": "guangxi",
-    "海南省": "hainan",
-    "福建省": "fujian",
-    "台湾省": "taiwan",
-    "青海省": "qinghai",
-    "香港特别行政区": "xianggang",
-    "澳门特别行政区": "aomen",
-}
+
 export default{
   
   data(){

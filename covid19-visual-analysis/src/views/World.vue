@@ -9,7 +9,7 @@
         <h3>全球现存确诊：100</h3>
         <h3>全球累计死亡：100</h3>
         </dv-border-box-8>
-
+        <el-button @click="getTotalConfirmedEachNation">测试接口</el-button>
         <dv-border-box-1 style="width:400px;height: 300px; margin-left: 50px; margin-bottom: 30px">
           <div v-if="curCountry.countryName != ''" style="margin-left: 50px">
             <h2 style="color: #96dee8;">{{curCountry.countryName}}</h2>
@@ -24,7 +24,7 @@
 
         <dv-decoration-9 style="width:150px; height:150px; margin-left: 150px">
           <dv-decoration-6 v-if="curCountry.countryName == ''" style="width: 50px; height: 50px; position: relative; left: 0%"/>
-          <span v-else style="font-family: zcool; color: #96dee8; font-size: 24px">60%</span>
+          <span v-else style="font-family: zcool; color: #96dee8; font-size: 24px">{{curCountry.cureNum / 1000}}</span>
         </dv-decoration-9>
       </el-container>
 
@@ -48,7 +48,7 @@
     <el-container class="top_chart">
     <el-container>
       <!-- 左边：表格展示 -->
-      <el-container class="table-wrapper" style="width: 50%; margin-top:20px; margin-left: 10px;">
+      <el-container class="table-wrapper" style="width: 50%; margin-top:80px; margin-left: 10px;">
         <el-table
             :data="countryInfo"
             @row-click="handleRowClick"
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import {earthBaseTexture} from '../assets/earthBaseTexture.js'
+
 import {nameMap} from '../assets/world.json'
 import {dataArr} from '../assets/world.json'
 export default {
@@ -97,6 +97,8 @@ export default {
         tolNum: 0,          /// 累计确诊
         cureNum: 0,         /// 累计治愈
       },
+      eachCountryTolConfirmed: [],          /// 各个国家累计确诊
+      eachCountryCurConfirmed: [],          /// 各个国家现存确诊
      //每个省的现况
       countryInfo:[
         {
@@ -115,7 +117,7 @@ export default {
           deadCount: '23',
           curedPercent: '98%',
           deadPercent: '2%',
-        }, 
+        },
       ],
       top10Data: {
         
@@ -124,7 +126,9 @@ export default {
     }
   },
   mounted() {
-    this.initData()
+    this.getCurConfirmedEachNation()
+    this.getTotalConfirmedEachNation()
+    
   },
   methods: {
     handleRowClick(row) {
@@ -224,9 +228,36 @@ export default {
     },
     // 绘制图表
     initData() {
+      
       let self = this
      	let _nameMap_ = nameMap
-      let _dataArr_ = dataArr
+      let _dataArr_ = [
+        {
+          "name": "根西岛",
+          "value": 3406,
+          "value2": 3406
+        },
+        {
+          "name": "中国",
+          "value": 127602,
+          "value2": 3406
+        },
+        {
+          "name": "日本",
+          "value": 1726624,
+          "value2": 3406
+        },
+        {
+          "name": "韩国",
+          "value": 425065,
+          "value2": 3406
+        },
+        {
+          "name": "缅甸",
+          "value": 519102,
+          "value2": 3406
+        },
+      ]
       //初始化canvas节点
       let myChart = this.$echarts.init(document.getElementById('chart_example6'),'walden')
       
@@ -236,7 +267,7 @@ export default {
           width: 4096, height: 2048
       });
       mapChart.setOption({
-          backgroundColor: 'rgba(23, 75, 110, 0.5)',
+          backgroundColor: 'rgba(26, 107, 161, 0.9)',
           grid: {
             width:'100%',
             height:'100%',
@@ -258,8 +289,8 @@ export default {
           },
           // 视觉映射组件
           visualMap: {
-            min: 0,
-            max: 10000,
+            min: 1000,
+            max: 10000000,
             text:['max','min'],
             realtime: false,
             calculable: true,
@@ -308,17 +339,25 @@ export default {
           ]
       });
       mapChart.on('mouseover', function(params){
-        console.log(params.data.name)  //这里的params是鼠标悬浮的图表节点的数据
-        self.curCountry.countryName = params.data.name
-        /// 下面是瞎写的
-        self.curCountry.curNum      = params.data.value
-        self.curCountry.tolNum      = params.data.value * 1.5
-        self.curCountry.cureNum     = params.data.value - 1
+        // console.log(params.data.name)  //这里的params是鼠标悬浮的图表节点的数据
+        
+        try{
+          self.curCountry.countryName = params.data.name
+          /// 下面是瞎写的
+          self.curCountry.curNum      = params.data.curConfirmed
+          self.curCountry.tolNum      = params.data.totalConfirmed
+          self.curCountry.cureNum     = params.data.deadCount
+          self.curCountry.cureRate    = params.data.curedRate
+        }catch{
+          self.curCountry.countryName = ''
+          return
+        }
+
       })
             
-      //echarts配置
+      //echarts 3D地球配置
       let option = {
-        // backgroundColor: '#013954',
+
         backgroundColor: 'none',
         tooltip: {
           trigger: 'item',
@@ -374,26 +413,25 @@ export default {
             distance: 240
           }
         },
-        series: [
-          {
-            name: 'lines3D',
-            type: 'lines3D',
-            coordinateSystem: 'globe',
-            effect: {
-              show: true
-            },
-            blendMode: 'lighter',
-            lineStyle: {
-              width: 2
-            },
-            data: [],
-            silent: false
-          }
-        ]
+        // series: [
+        //   {
+        //     name: 'lines3D',
+        //     type: 'lines3D',
+        //     coordinateSystem: 'globe',
+        //     effect: {
+        //       show: true
+        //     },
+        //     blendMode: 'lighter',
+        //     lineStyle: {
+        //       width: 2
+        //     },
+        //     data: [],
+        //     silent: false
+        //   }
+        // ]
       }
-      // 随机数据 i控制线数量
-      // var chartDom = document.getElementById('top10Chart');
-      var top10Chart = this.$echarts.init(document.getElementById('top10Chart'),'walden');
+
+      var top10Chart = this.$echarts.init(document.getElementById('top10Chart'), 'walden');
       var top10Option;
       top10Option = {
         tooltip: {
@@ -413,9 +451,7 @@ export default {
             saveAsImage: { show: true }
           }
         },
-        legend: {
-          data: ['Evaporation', 'Precipitation', 'Temperature']
-        },
+       
         xAxis: [
           {
             type: 'category',
@@ -477,6 +513,38 @@ export default {
         myChart.resize()
       })
     },
+    /// 获取全球各国累计确诊
+    getTotalConfirmedEachNation() {
+      var start_time  = '2021-11-24 17:00:00'
+      var end_time    = '2021-11-24 17:00:00'
+      this.$http({
+        method: 'get',
+        url: 'http://101.132.138.14:8082/globalCountry/getCountryConfirmCount',
+        params: {
+          beginTime: start_time,
+          endTime: end_time
+        }
+      }).then(response => {
+        console.log(response.data.data[0].data)
+        this.eachCountryTolConfirmed = response.data.data[0].data
+        this.initData()
+      })
+    },
+    getCurConfirmedEachNation() {
+      var start_time  = '2021-11-24 17:00:00'
+      var end_time    = '2021-11-24 17:00:00'
+      this.$http({
+        method: 'get',
+        url: 'http://101.132.138.14:8082/globalCountry/getCountryNowCount',
+        params: {
+          beginTime: start_time,
+          endTime: end_time
+        }
+      }).then(response => {
+        console.log(response.data.data[0].data)
+        this.eachCountryCurConfirmed = response.data.data[0].data
+      })
+    }
 
   },
   watch: {},
@@ -521,20 +589,5 @@ export default {
 h3 {
   // font-family: zcool;
   color: #96dee8;
-}
-
-h {
-  color: rgb(23, 75, 110)
-  #000c2d
-  #f73f11,
-  #f5610b,
-  #ec510a
-  #eb723b
-    #f57032,
-  #f5a30b,
-  #ecc20a
-  #ebda3b
-    #d9db6b
-  #2cf503
 }
 </style>
