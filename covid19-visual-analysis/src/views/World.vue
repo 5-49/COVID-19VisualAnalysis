@@ -41,13 +41,23 @@
      </el-container>
 
       <!-- 右边 -->
-    <el-container direction="vertical" style="width:37%;margin-left:10px">
-      <dv-border-box-11 title="国家数据看板" :color="['#6be6c1', '#3fb1e3']" style="padding-left:60px;padding-top:80px;width:400px">
-        <div class="headline" style="margin-left:-50px">{{curCountry.countryName}}</div>
-            <h3>现有确诊：<div class="num" style="font-weight:normal">{{curCountry.curNum}}</div></h3>
-            <h3>累计确诊：<div class="num" style="font-weight:normal">{{curCountry.tolNum}}</div></h3>
-            <h3>累计治愈：<div class="num" style="font-weight:normal">{{curCountry.cureNum}}</div></h3>           
+    <el-container direction="horizonal" style="width:37%;margin-left:10px">
+      <dv-border-box-11 title="国家数据看板" :color="['#6be6c1', '#3fb1e3']" style="padding-left:60px;padding-top:80px;width:500px">
+            <div class="headline" style="margin-left:-50px">{{curCountry.countryName}}</div>
+            <div>
+              <div style="float: left; width: 35%">
+                  <h3>现有确诊：<div class="num" style="font-weight:normal">{{curCountry.curNum}}</div></h3>
+                  <h3>累计确诊：<div class="num" style="font-weight:normal">{{curCountry.tolNum}}</div></h3>
+                  <h3>累计治愈：<div class="num" style="font-weight:normal">{{curCountry.cureNum}}</div></h3>  
+              </div>
+              <div style="float: right; width: 65%; padding-top: 100px; ">
+                <dv-percent-pond :config="config" style="width:300px; height:100px; transform: rotate(270deg); float: right;" />
+              </div>
+            </div>
+            
+            
       </dv-border-box-11>
+
     </el-container>
 
     
@@ -125,7 +135,11 @@ export default {
       },
       eachCountryInfo:[],                   /// 各个国家各种信息
       top10Country: [],
-      selectedCountry: ''
+      selectedCountry: '',
+      config: {                 /// dataV配置
+        value: 0,
+        localGradient: true
+      }
     }
   },
   mounted() {
@@ -347,6 +361,8 @@ export default {
         // console.log(params.data.name)  //这里的params是鼠标悬浮的图表节点的数据
         
         try{
+          const { config } = self
+
           console.log(params.data.curedRate)
           self.curCountry.countryName = params.data.name
           
@@ -354,8 +370,12 @@ export default {
           self.curCountry.tolNum      = params.data.value
           self.curCountry.cureNum     = params.data.curedCount
           self.curCountry.curedRate   = params.data.curedRate
+          self.config.value           = parseFloat(self.curCountry.curedRate)
+          console.log(self.config.value)
+          self.config = { ...self.config }
+
         }catch{
-          self.curCountry.countryName = ''
+          // self.curCountry.countryName = ''
           return
         }
 
