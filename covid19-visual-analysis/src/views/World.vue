@@ -9,7 +9,7 @@
         <div align="center" style="margin-top:5px;margin-bottom:-70px;font-family:zcool;font-size:40px;color:#00ffff"> 
           数据可视化
         </div>
-        <dv-decoration-5 class="headline" dur=3  :color="['#3fb1e3', '#96dee8']" style="width:1000px;height:150px;margin:0 auto" />
+        <dv-decoration-5 class="headline" :dur="3"  :color="['#3fb1e3', '#96dee8']" style="width:1000px; height:150px; margin:0 auto" />
 
   <el-container direction="vertical">
     <!-- 本页面第一部分：全球热力图 -->
@@ -18,15 +18,15 @@
         <div style="margin-left:30px;margin-top:0px">
           <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
           <h3 style="font-size:25px">全球累计确诊：
-            <countTo :startVal='startVal' :endVal='49870' :duration='3000' separator="" class="num" style="font-weight:normal">
+            <countTo :startVal="0" :endVal="49870" :duration="3000" separator="" class="num" style="font-weight:normal">
           </countTo></h3></dv-decoration-11>
           <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
           <h3 style="font-size:25px">全球现存确诊：
-            <countTo :startVal='startVal' :endVal='7587' :duration='3000' separator="" class="num" style="font-weight:normal">
+            <countTo :startVal="0" :endVal="7587" :duration="3000" separator="" class="num" style="font-weight:normal">
           </countTo></h3></dv-decoration-11>
           <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
           <h3 style="font-size:25px">全球累计死亡：
-            <countTo :startVal='startVal' :endVal='3090' :duration='3000' separator="" class="num" style="font-weight:normal">
+            <countTo :startVal="0" :endVal="3090" :duration="3000" separator="" class="num" style="font-weight:normal">
           </countTo></h3></dv-decoration-11>
         </div>
       </el-container>
@@ -51,7 +51,11 @@
                   <h3>累计治愈：<div class="num" style="font-weight:normal">{{curCountry.cureNum}}</div></h3>  
               </div>
               <div style="float: right; width: 65%; padding-top: 100px; ">
-                <dv-percent-pond :config="config" style="width:300px; height:100px; transform: rotate(270deg); float: right;" />
+                <h3 style="margin-left: 10%;">
+                  治愈率:
+                  <dv-percent-pond :config="config" style="width:300px; height:100px; transform: rotate(270deg); float: right;" />
+                </h3> 
+                
               </div>
             </div>
             
@@ -139,6 +143,11 @@ export default {
       config: {                 /// dataV配置
         value: 0,
         localGradient: true
+      },
+      countryToDraw: {
+        dateSequence: [],     /// 时间点序列
+        totConfirmed: [],     /// 对应时间点的累计确诊
+        totCured:     [],     /// 对应时间点的累计治愈
       }
     }
   },
@@ -168,29 +177,101 @@ export default {
       })
     },
     handleRowClick(row) {
-      // console.log(row)
-      this.selectedCountry = row.name
-      this.drawCountry()
-    },
-    drawCountry() {
-      var top10 =[];
-      var dateSequence = [];
-       var totalInfected = [];
-       var totalCured = [];
-      if(this.selectedCountry == 'America')
-      {      
-        // var top10 = ['美国1','美国2','美国3','美国4','美国5','美国6','美国7','美国8','美国9','美国10']  /// 这个数据是请求的
-        dateSequence = ['2021-1','2021-2','2021-3','2021-4','2021-5','2021-6','2021-7','2021-8','2021-9','2021-10',]
-        totalInfected = [100, 200, 300, 400, 450, 550, 600, 700, 750, 800]
-        totalCured    = [50, 61, 71, 78, 89, 99,120,168,189,199]
-      }
-      if(this.selectedCountry == 'China')
-      {
-        dateSequence = ['2021-1','2021-2','2021-3','2021-4','2021-5','2021-6','2021-7','2021-8','2021-9','2021-10',]
-        totalInfected = [100, 150, 302, 988, 43, 45320, 5430, 50, 50, 800]
-        totalCured    = [50, 567, 671, 678, 812439, 949,1240,1648,1489,1499]
-      }
+      console.log(row.id)
+      this.$http({
+        method: 'get',
+        url: 'http://101.132.138.14:8082/globalCountry/getOneCountryInformationBySlot',
+        params: {
+          beginTime: '2021-01-24 17:00:00',
+          countryId: row.id,
+          dayCount: 30,
+          endTime: '2021-11-24 17:00:00'
 
+        }
+      }).then(response => {
+        console.log(response)
+        var dateSequence = []
+        var totConfirmed = []
+        var totCured     = []
+        dateSequence = response.data.data.map(item =>{ return item.updatedTime.slice(5, 10)})
+        totConfirmed = response.data.data.map(item =>{ return item.totConfirmed})
+        totCured = response.data.data.map(item =>{ return item.curedCount})
+        var top10Chart = this.$echarts.init(document.getElementById('top10Chart'),'walden');
+        var top10Option = {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              crossStyle: {
+                color: '#999'
+              }
+            }
+          },
+          toolbox: {
+            feature: {
+              dataView: { show: true, readOnly: false },
+              magicType: { show: true, type: ['line', 'bar'] },
+              restore: { show: true },
+              saveAsImage: { show: true }
+            }
+          },
+          xAxis: [
+            {
+              type: 'category',
+              data: dateSequence,
+              axisPointer: {
+                type: 'shadow'
+              }
+            }
+          ],
+          yAxis: [
+            {
+              type: 'value',
+              name: '累计确诊',
+              min: 0,
+              max: 50000000,
+              interval: 2500000,
+              axisLabel: {
+                formatter: '{value}'
+              }
+            },
+            // {
+            //   type: 'value',
+            //   name: '累计治愈',
+            //   min: 10000,
+            //   max: 5000000,
+            //   interval: 3000000,
+            //   axisLabel: {
+            //     formatter: '{value}'
+            //   }
+            // }
+          ],
+          series: [
+            {
+              name: '累计确诊',
+              type: 'bar',
+              data: totConfirmed
+            },
+            {
+              name: '累计治愈',
+              type: 'bar',
+              data: totCured
+            },
+            {
+              name: '累计确诊趋势',
+              type: 'line',
+              yAxisIndex: 0,
+              data: totConfirmed
+            }
+          ]
+        };
+        top10Chart.setOption(top10Option)
+      })
+
+      
+    },
+    drawCountry(dateSequence, totConfirmed, totCured) {
+    
       var top10Chart = this.$echarts.init(document.getElementById('top10Chart'),'walden');
       var top10Option = {
         tooltip: {
@@ -245,18 +326,18 @@ export default {
           {
             name: 'toltalInfected',
             type: 'bar',
-            data: totalInfected
+            data: totConfirmed
           },
           {
             name: 'toltalCured',
             type: 'bar',
-            data: totalCured
+            data: totCured
           },
           {
             name: 'toltalInfected',
             type: 'line',
             yAxisIndex: 1,
-            data: totalInfected
+            data: totConfirmed
           }
         ]
       };
@@ -299,12 +380,12 @@ export default {
           },
           // 视觉映射组件
           visualMap: {
-            min: 1000,
-            max: 10000000,
+            min: 20000,
+            max: 4000000,
             text:['max','min'],
             realtime: false,
             calculable: true,
-            color: ['#f73f11','#e6a939'],
+            color: ['#f73f11','#f3bd59'],
           },
           series: [
             {
@@ -439,100 +520,9 @@ export default {
             distance: 240
           }
         },
-        // series: [
-        //   {
-        //     name: 'lines3D',
-        //     type: 'lines3D',
-        //     coordinateSystem: 'globe',
-        //     effect: {
-        //       show: true
-        //     },
-        //     blendMode: 'lighter',
-        //     lineStyle: {
-        //       width: 2
-        //     },
-        //     data: [],
-        //     silent: false
-        //   }
-        // ]
+
       }
 
-      var top10Chart = this.$echarts.init(document.getElementById('top10Chart'), 'walden');
-      var top10Option;
-      top10Option = {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross',
-            crossStyle: {
-              color: '#999'
-            }
-          }
-        },
-        toolbox: {
-          feature: {
-            dataView: { show: true, readOnly: false },
-            magicType: { show: true, type: ['line', 'bar'] },
-            restore: { show: true },
-            saveAsImage: { show: true }
-          }
-        },
-       
-        xAxis: [
-          {
-            type: 'category',
-            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            axisPointer: {
-              type: 'shadow'
-            }
-          }
-        ],
-        yAxis: [
-          {
-            type: 'value',
-            name: 'Precipitation',
-            min: 0,
-            max: 250,
-            interval: 50,
-            axisLabel: {
-              formatter: '{value} ml'
-            }
-          },
-          {
-            type: 'value',
-            name: 'Temperature',
-            min: 0,
-            max: 25,
-            interval: 5,
-            axisLabel: {
-              formatter: '{value} °C'
-            }
-          }
-        ],
-        series: [
-          {
-            name: 'Evaporation',
-            type: 'bar',
-            data: [
-              2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3
-            ]
-          },
-          {
-            name: 'Precipitation',
-            type: 'bar',
-            data: [
-              2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
-            ]
-          },
-          {
-            name: 'Temperature',
-            type: 'line',
-            yAxisIndex: 1,
-            data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
-          }
-        ]
-      };
-      top10Chart.setOption(top10Option)
       //画图
       myChart.setOption(option)
       window.addEventListener('resize', function() {
@@ -589,5 +579,6 @@ h3 {
   font-size: 50px;
   margin-bottom: 10px;
   text-align: center; 
+  // color:#f3bd59
 }
 </style>
