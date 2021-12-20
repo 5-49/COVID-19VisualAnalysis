@@ -42,22 +42,21 @@
 
       <!-- 右边 -->
     <el-container direction="horizonal" style="width:37%;margin-left:10px">
-      <dv-border-box-11 title="国家数据看板" :color="['#6be6c1', '#3fb1e3']" style="padding-left:60px;padding-top:80px;width:500px">
+      <dv-border-box-11 title="国家数据看板" :color="['#6be6c1', '#3fb1e3']" style="padding-left:60px;padding-top:80px;width:400px;height:450px">
             <div class="headline" style="margin-left:-50px">{{curCountry.countryName}}</div>
-            <div>
-              <div style="float: left; width: 35%">
+            <el-container>
+              <el-container style="float: left; width: 35%" direction="vertical">
                   <h3>现有确诊：<div class="num" style="font-weight:normal">{{curCountry.curNum}}</div></h3>
                   <h3>累计确诊：<div class="num" style="font-weight:normal">{{curCountry.tolNum}}</div></h3>
                   <h3>累计治愈：<div class="num" style="font-weight:normal">{{curCountry.cureNum}}</div></h3>  
-              </div>
-              <div style="float: right; width: 65%; padding-top: 100px; ">
+              </el-container>
+              <el-container style="float: right; width: 65%; padding-top: 100px; ">
                 <h3 style="margin-left: 10%;">
-                  治愈率:
+                  治愈率: 
                   <dv-percent-pond :config="config" style="width:300px; height:100px; transform: rotate(270deg); float: right;" />
-                </h3> 
-                
-              </div>
-            </div>
+                </h3>              
+              </el-container>
+            </el-container>
             
             
       </dv-border-box-11>
