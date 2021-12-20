@@ -153,11 +153,100 @@ export default {
   },
   mounted() {
     this.getEachNationInfo()
-    
+    this.getGlobalInfo()
     
   },
   methods: {
-
+    getGlobalInfo() {
+      let self = this
+      this.$http({
+        method: 'get',
+        url: 'http://101.132.138.14:8082/globalCountry/getGlobalInformationBySlot',
+        params: {
+          beginTime: '2021-01-24 17:00:00',
+          dayCount: 31,
+          endTime: '2021-11-24 17:00:00'
+        }
+      }).then(response => {
+        console.log(response.data.data)
+        var dateSequence = []
+        var totConfirmed = []
+        var totCured     = []
+        dateSequence = response.data.data.map(item =>{ return item.updatedTime.slice(5, 10)})
+        totConfirmed = response.data.data.map(item =>{ return item.totConfirmed})
+        totCured = response.data.data.map(item =>{ return item.curedCount})
+        var top10Chart = this.$echarts.init(document.getElementById('top10Chart'),'walden');
+        var top10Option = {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              crossStyle: {
+                color: '#999'
+              }
+            }
+          },
+          toolbox: {
+            feature: {
+              dataView: { show: true, readOnly: false },
+              magicType: { show: true, type: ['line', 'bar'] },
+              restore: { show: true },
+              saveAsImage: { show: true }
+            }
+          },
+          xAxis: [
+            {
+              type: 'category',
+              data: dateSequence,
+              axisPointer: {
+                type: 'shadow'
+              }
+            }
+          ],
+          yAxis: [
+            {
+              type: 'value',
+              name: '累计确诊',
+              min: 0,
+              max: 300000000,
+              interval: 25000000,
+              axisLabel: {
+                formatter: '{value}'
+              }
+            },
+            // {
+            //   type: 'value',
+            //   name: '累计治愈',
+            //   min: 10000,
+            //   max: 5000000,
+            //   interval: 3000000,
+            //   axisLabel: {
+            //     formatter: '{value}'
+            //   }
+            // }
+          ],
+          series: [
+            {
+              name: '累计确诊',
+              type: 'bar',
+              data: totConfirmed
+            },
+            {
+              name: '累计治愈',
+              type: 'bar',
+              data: totCured
+            },
+            {
+              name: '累计确诊趋势',
+              type: 'line',
+              yAxisIndex: 0,
+              data: totConfirmed
+            }
+          ]
+        };
+        top10Chart.setOption(top10Option)
+      })
+    },
     getEachNationInfo() {
       let self = this
       this.$http({
