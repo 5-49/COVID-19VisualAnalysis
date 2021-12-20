@@ -57,11 +57,6 @@ import 'echarts/map/js/province/yunnan'
 import 'echarts/map/js/province/zhejiang'
 import moment from 'moment'
 
-
-
-//导入时间戳转换
-import moment from 'moment'
-
 import predictData from '../public/predict.json'
 
 Vue.config.productionTip = false

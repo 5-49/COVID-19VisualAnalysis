@@ -1,65 +1,64 @@
 <template>
+  <el-container  direction="vertical" >
+      <!-- 标题 -->
+    <!-- <div align="center" style="margin-top:40px;margin-bottom:-10px">  <img src="@/assets/image/title1.png"  style="width:600px;" /></div>
+  <div align="center" style="margin-bottom:-70px">  <img src="@/assets/image/title2.png"  style="width:450px;" /></div> -->
+        <div align="center" style="margin-top:10px;font-family:zcool;font-size:50px;color:#00ffff"> 
+          新型冠状病毒疫情
+        </div>
+        <div align="center" style="margin-top:5px;margin-bottom:-70px;font-family:zcool;font-size:40px;color:#00ffff"> 
+          数据可视化
+        </div>
+        <dv-decoration-5 class="headline" dur=3  :color="['#3fb1e3', '#96dee8']" style="width:1000px;height:150px;margin:0 auto" />
+
   <el-container direction="vertical">
-    <!-- 本页面第一部分：全球热力图&新闻播报 -->
-    <el-container style="height: 700px">
-
+    <!-- 本页面第一部分：全球热力图 -->
+    <el-container style="height: 500px">
       <el-container style="width:25%;" direction="vertical">
-        <dv-border-box-8 style="width: 400px; height: 180px; margin-left: 50px; margin-bottom: 50px; padding-left: 10px">
-        <h3>全球累计确诊：100</h3>
-        <h3>全球现存确诊：100</h3>
-        <h3>全球累计死亡：100</h3>
-        </dv-border-box-8>
-        <!-- < @click="getEachNationInfo">测试接口<//el-button> -->
-        <dv-border-box-1 style="width:400px;height: 300px; margin-left: 50px; margin-bottom: 30px">
-          <div v-if="curCountry.countryName != ''" style="margin-left: 50px">
-            <h2 style="color: #96dee8;">{{curCountry.countryName}}</h2>
-            <h3>现有确诊：{{curCountry.curNum}}</h3>
-            <h3>累计确诊：{{curCountry.tolNum}}</h3>
-            <h3>累计治愈：{{curCountry.cureNum}}</h3>
-          </div>
-          <div v-else style="padding-top: 120px; width: 100%"><dv-decoration-3 style="width:100%;height:50px;" /></div>
-        </dv-border-box-1>
-
-        <h3 style="; color: #96dee8; margin-left: 190px">治愈率</h3>
-
-        <dv-decoration-9 style="width:150px; height:150px; margin-left: 150px">
-          <dv-decoration-6 v-if="curCountry.countryName == ''" style="width: 50px; height: 50px; position: relative; left: 0%"/>
-          <span v-else style="font-family: zcool; color: #96dee8; font-size: 24px">{{curCountry.curedRate}}</span>
-        </dv-decoration-9>
+        <div style="margin-left:30px;margin-top:0px">
+          <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
+          <h3 style="font-size:25px">全球累计确诊：
+            <countTo :startVal='startVal' :endVal='49870' :duration='3000' separator="" class="num" style="font-weight:normal">
+          </countTo></h3></dv-decoration-11>
+          <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
+          <h3 style="font-size:25px">全球现存确诊：
+            <countTo :startVal='startVal' :endVal='7587' :duration='3000' separator="" class="num" style="font-weight:normal">
+          </countTo></h3></dv-decoration-11>
+          <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
+          <h3 style="font-size:25px">全球累计死亡：
+            <countTo :startVal='startVal' :endVal='3090' :duration='3000' separator="" class="num" style="font-weight:normal">
+          </countTo></h3></dv-decoration-11>
+        </div>
       </el-container>
 
      <!-- 中间：3D地球 -->
-      <el-container
+     <el-container style="width:50%;margin-left:10px;margin-top:-10px">
+      <div
         class="earthmap"
         id="chart_example6"
-        style="width:800px;height:700px; ">
-      </el-container>
-
-      <!-- 右边：新闻 -->
-      <div class="container">
-        <span class="newstitle">实时播报</span>
-        <div v-for="(item,index) in list" :key="index">
-          <div class="newsList" v-for="(onenew,index) in item.news" :key="index">
-            <div class="dateList">
-              <div style="text-align: center; font-size: 14px;">{{onenew.pubDateStr}}</div>
-              <div style="text-align: center; font-size: 12px;">{{onenew.pubDate|dateForm}}</div>
-              <span class="dateItem"></span>
-            </div>
-            <div class="newsRight">
-              <div class="newsItemTitle">
-                <span class="newest" v-show="index==0">最新</span>
-                {{onenew.title}}
-              </div>
-              <a :href="onenew.sourceUrl" target="__blank" style="font-size: 12px;">{{onenew.summary}}</a>
-              <div style="text-align: right; font-size: 14px;">信息来源：{{onenew.infoSource}}</div>
-            </div>
-          </div>
-        </div>
+        style="width:900px;height:700px; postion:relative; left:50px;top:-70px">
       </div>
+     </el-container>
+
+      <!-- 右边 -->
+    <el-container direction="vertical" style="width:37%;margin-left:10px">
+      <dv-border-box-11 title="国家数据看板" :color="['#6be6c1', '#3fb1e3']" style="padding-left:60px;padding-top:80px;width:400px">
+        <div class="headline" style="margin-left:-50px">{{curCountry.countryName}}</div>
+            <h3>现有确诊：<div class="num" style="font-weight:normal">{{curCountry.curNum}}</div></h3>
+            <h3>累计确诊：<div class="num" style="font-weight:normal">{{curCountry.tolNum}}</div></h3>
+            <h3>累计治愈：<div class="num" style="font-weight:normal">{{curCountry.cureNum}}</div></h3>           
+      </dv-border-box-11>
+    </el-container>
+
+    
 
     </el-container>
 
-    <dv-decoration-10 style="width:96%;height:5px;margin-top:50px;" />
+    <el-container style="margin-top:50px">
+      <dv-decoration-3 style="width:40%;height:30px;" />
+      <dv-decoration-7 class="headline" style="width:30%;height:30px;">  Top10国家分析  </dv-decoration-7>
+      <dv-decoration-3 style="width:40%;height:30px;" />
+  </el-container>
 
     <!-- 这是页面的第二部分：全球top10国家展示 -->
     <el-container class="top_chart">
@@ -97,6 +96,7 @@
     
 
   </el-container>
+   </el-container>
 </template>
 
 <script>
@@ -106,17 +106,22 @@ import {dataArr} from '../assets/world.json'
 import axios from 'axios'
 import moment from 'moment'
 import predictData from '../../public/predict.json'
+import countTo from 'vue-count-to'
+
 export default {
+  components: {
+    countTo
+  },
   data() {
     return {
       totalNum: 1000,
       
       curCountry:{          /// 鼠标悬浮时选中的国家
-        countryName: '',    /// 国家名称
-        curNum: 0,          /// 现有确诊
-        tolNum: 0,          /// 累计确诊
-        cureNum: 0,         /// 累计治愈
-        curedRate: ''       /// 治愈率
+        countryName: '美国',    /// 国家名称
+        curNum: 8528066,          /// 现有确诊
+        tolNum: 48090884,          /// 累计确诊
+        cureNum: 38787459,         /// 累计治愈
+        curedRate: '81.6%'       /// 治愈率
       },
       eachCountryInfo:[],                   /// 各个国家各种信息
       top10Country: [],
@@ -395,8 +400,8 @@ export default {
           light: {
             // 光照阴影
             main: {
-              color: '#fff', // 光照颜色
-              intensity: 1, // 光照强度
+              color: '#000', // 光照颜色
+              intensity: 10, // 光照强度
               shadowQuality: 'high', //阴影亮度
               shadow: true, // 是否显示阴影
               alpha: 40,
@@ -557,5 +562,12 @@ export default {
 h3 {
   // font-family: zcool;
   color: #96dee8;
+}
+.headline{
+  color: #6be6c1;
+  font-family: 'zcool';
+  font-size: 50px;
+  margin-bottom: 10px;
+  text-align: center; 
 }
 </style>

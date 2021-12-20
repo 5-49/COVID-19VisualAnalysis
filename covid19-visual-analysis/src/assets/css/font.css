@@ -4,3 +4,10 @@
     font-weight: normal;  
     font-style: normal;  
  }
+
+ @font-face {  
+  font-family: 'digital';  
+  src: url('./digital.ttf');  
+  font-weight: normal;  
+  font-style: normal;  
+}

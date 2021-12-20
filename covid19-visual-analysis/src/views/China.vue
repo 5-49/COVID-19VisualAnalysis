@@ -13,8 +13,13 @@
     <!-- 两个重要数据展示 -->
     <el-container direction="vertical" style="width:30%">
       <dv-decoration-12  style="width:270px;height:270px;margin-left:18px;">
-        <h1 class="text_headline" style="color: #00efff;  text-align: center;">
-          现有确诊<br> {{this.cur_confi}} <br><br> 累计确诊<br> {{this.tot_confi}}
+        <h1 class="text_headline" style="color: #00efff;  text-align: center;font-weight:normal">
+          现有确诊<br> 
+          <countTo :startVal='startVal' :endVal='2880' :duration='3000' separator="" class="num" style="font-weight:normal">
+          </countTo>
+          <br> 累计确诊<br> 
+          <countTo :startVal='startVal' :endVal='127687' :duration='3000' separator="" class="num" style="font-weight:normal">
+          </countTo>
       </h1></dv-decoration-12>  
 
       <div class="text_headline" style="margin:30px 0px;margin-left:70px;">治愈率和死亡率</div>
@@ -48,12 +53,12 @@
     <el-container style="height:100%; width:100%; ">    
       <dv-border-box-12 style="height:100%; width:49%;margin-left:8px;padding:20px 0px 0px 20px">
         <div class="text">全国疫情实时数据</div>
-        <div style="width:420px;height:400px" ref="cur_chart" class="chart"></div>
+        <div style="width:450px;height:400px" ref="cur_chart" class="chart"></div>
       </dv-border-box-12>
 
       <dv-border-box-12 style="height:100%; width:49%;margin-right:20px;margin-left:20px;padding:20px 0px 0px 20px">
         <div class="text">全国疫情累计数据</div>
-        <div style="width:420px;height:400px" ref="tot_chart" class="chart"></div>
+        <div style="width:450px;height:400px" ref="tot_chart" class="chart"></div>
       </dv-border-box-12>
     </el-container>
 
@@ -62,18 +67,14 @@
     <!-- 这是下面省展示 -->
     <el-container>
       <!-- 这是表格 -->
-      <div class="table-wrapper" style="width: 50%; margin-top:20px">
+      <div class="table-wrapper" style="width: 50%; margin-top:20px;height:750px;">
       <el-table
           :cell-style="cellStyle"
           @row-click="handleRowClick"
           size="mini"
           :show-header="true"
-          :data="
-            provinInfo.slice(
-              (currentPage - 1) * pagesize,
-              currentPage * pagesize
-            )
-          "
+          :data="provinInfo"
+          height="750"
         >
           <el-table-column prop="name" label="省名" >
           </el-table-column>
@@ -87,19 +88,7 @@
           </el-table-column>
           <el-table-column prop="curedPercent" label="治愈率" sortable>
           </el-table-column>
-          <el-table-column prop="deadPercent" label="病死率" sortable>
-          </el-table-column>
         </el-table>
-        <el-pagination
-          small
-          layout="prev, pager, next"
-          :pager-count="7"
-          :total="total"
-          @current-change="current_change"
-          align="center"
-          style="padding-bottom: 15px"
-        >
-        </el-pagination>
       </div>
 
         <!-- 这是省详细数据展示 -->
@@ -156,9 +145,12 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import countTo from 'vue-count-to'
 
-export default{
-  
+export default {
+  components: {
+    countTo
+  },
   data(){
     return {
       pagesize: 8, //一页展示的表格项数
@@ -197,13 +189,13 @@ export default{
       //每个省的现况
       provinInfo:[
         {
-          name: '山西',
-          curConfirmed: '111',
-          totConfirmed: '3223',
-          curedCount: '2200',
-          deadCount: '23',
-          curedPercent: '98%',
-          deadPercent: '2%',
+          "name": '山西',
+          "curConfirmed": '111',
+          "totConfirmed": '3223',
+          "curedCount": '2200',
+          "deadCount": '23',
+          "curedPercent": '98%',
+          "deadPercent": '2%',
         }
       ],
       list: Array
@@ -987,8 +979,4 @@ a {
   scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1);
   scrollbar-width: thin;
 }
-
-/* ----firefox---- */
-/* edge、ie暂未找到解决方案，或者可以使用js库来进行优化 */
-/* 滚动条样式结束 */
 </style>
