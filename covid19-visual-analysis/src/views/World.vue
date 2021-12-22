@@ -101,7 +101,7 @@
       </el-container>
       <!-- 右边：渲染具体图标 -->
       <el-container style="width: 50%; height: 600px;  float: right; margin-left: 80px; margin-top: 20px">
-        <dv-border-box-12 style="width: 900px" id="top10Chart">           
+        <dv-border-box-12 style="width: 700px" id="top10Chart">           
         </dv-border-box-12>
       </el-container>
     </el-container>
@@ -140,7 +140,7 @@ export default {
       top10Country: [],
       selectedCountry: '',
       config: {                 /// dataV配置
-        value: 0,
+        value: 98,
         localGradient: true
       },
       countryToDraw: {

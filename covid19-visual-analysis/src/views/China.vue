@@ -106,8 +106,8 @@
               </el-button></dv-border-box-8>
           </el-container>
           <!-- 热力图显示 -->
-          <div id="provin_MapCharts" ref="provin_MapCharts" style="width:400px;height:350px;margin-left:50px;"></div>
-          <div id="provin_BarCharts" ref="provin_BarCharts" style="width:450px;height:300px;margin-left:10px;"></div>
+          <div id="provin_MapCharts" ref="provin_MapCharts" style="width:500px;height:350px;margin-left:50px;"></div>
+          <div id="provin_BarCharts" ref="provin_BarCharts" style="width:490px;height:300px;margin-left:10px;"></div>
 
         </dv-border-box-1>
     </el-container>
@@ -169,7 +169,7 @@ export default {
       },
       cur_confi:2880,//全国现有确诊数
       tot_confi:127687,//全国累计确诊数
-      chosen_provi:'山西',
+      chosen_provi:'北京',
 
       /////// 以下数据均需要后端获取 ///////
       provi_cur_confi:[],//各省份现有确诊
@@ -558,8 +558,20 @@ export default {
       console.log(this.city_cur_confi)
 
       var i
+      if(this.chosen_provi!='北京'&& this.chosen_provi!='天津' && this.chosen_provi!='上海'){
+        for(i=0;i<this.city_cur_confi.length;i++){
+          this.city_cur_confi[i].name=this.city_cur_confi[i].name+'市'
+        }
+      }
+
+      var i_max=10
       for(i=0;i<this.city_cur_confi.length;i++){
-        this.city_cur_confi[i].name=this.city_cur_confi[i].name+'市'
+        if(this.city_cur_confi[i].value < 0){
+          this.city_cur_confi[i].value = 0
+        }
+        if(this.city_cur_confi[i].value > i_max && this.city_cur_confi[i].name!='境外输入市' && this.city_cur_confi[i].name!='境外输入'){
+          i_max=this.city_cur_confi[i].value
+        }
       }
 
       let map_option = {
@@ -571,7 +583,7 @@ export default {
         },
         dataRange: {
           min: 0,
-          max: 80,
+          max: i_max,
           x: 'left',
           y: 'bottom',
           text: ['max', 'min'],
@@ -712,15 +724,26 @@ export default {
       console.log(this.city_cur_confi)
 
       var i
-      for(i=0;i<this.city_cur_confi.length;i++){
-        this.city_cur_confi[i].name=this.city_cur_confi[i].name+'市'
+      if(this.chosen_provi!='北京' && this.chosen_provi!='天津' && this.chosen_provi!='上海'){
+        for(i=0;i<this.city_cur_confi.length;i++){
+          this.city_cur_confi[i].name=this.city_cur_confi[i].name+'市'
+        }
       }
 
+      var i_max=10
+      for(i=0;i<this.city_cur_confi.length;i++){
+        if(this.city_cur_confi[i].value < 0){
+          this.city_cur_confi[i].value = 0
+        }
+        if(this.city_cur_confi[i].value > i_max && this.city_cur_confi[i].name!='境外输入市' && this.city_cur_confi[i].name!='境外输入'){
+          i_max=this.city_cur_confi[i].value
+        }
+      }
 
       let map_option = {
         dataRange: {
           min: 0,
-          max: 80,
+          max: i_max,
           x: 'left',
           y: 'bottom',
           text: ['max', 'min'],
@@ -776,14 +799,26 @@ export default {
       console.log(this.city_tot_confi)
 
       var i
-      for(i=0;i<this.city_tot_confi.length;i++){
-        this.city_tot_confi[i].name=this.city_tot_confi[i].name+'市'
+      if(this.chosen_provi!='北京' && this.chosen_provi!='天津' && this.chosen_provi!='上海'){
+        for(i=0;i<this.city_tot_confi.length;i++){
+          this.city_tot_confi[i].name=this.city_tot_confi[i].name+'市'
+        }
       }
 
+      var i_max=10
+      for(i=0;i<this.city_tot_confi.length;i++){
+        if(this.city_tot_confi[i].value < 0){
+          this.city_tot_confi[i].value = 0
+        }
+        if(this.city_tot_confi[i].value > i_max&& this.city_tot_confi[i].name!='境外输入市' && this.city_tot_confi[i].name!='境外输入'){
+          i_max=this.city_tot_confi[i].value
+        }
+      }
+    
       let map_option = {
         dataRange: {
           min: 0,
-          max: 300,
+          max: i_max,
           x: 'left',
           y: 'bottom',
           text: ['max', 'min'],
