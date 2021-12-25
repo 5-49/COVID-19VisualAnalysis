@@ -15,20 +15,27 @@
     <!-- 本页面第一部分：全球热力图 -->
     <el-container style="height: 500px">
       <el-container style="width:25%;" direction="vertical">
+
+
+        <el-button @click="postNewData">发布新数据</el-button>
+
+
+
         <div style="margin-left:30px;margin-top:0px">
           <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
           <h3 style="font-size:25px">全球累计确诊：
-            <countTo :startVal="0" :endVal="49870" :duration="3000" separator="" class="num" style="font-weight:normal">
+            <countTo :startVal="0" :endVal="globalInfo.totConfirmed" :duration="1000" separator="" class="num" style="font-weight:normal">
           </countTo></h3></dv-decoration-11>
           <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
           <h3 style="font-size:25px">全球现存确诊：
-            <countTo :startVal="0" :endVal="7587" :duration="3000" separator="" class="num" style="font-weight:normal">
+            <countTo :startVal="0" :endVal="globalInfo.curConfirmed" :duration="1000" separator="" class="num" style="font-weight:normal">
           </countTo></h3></dv-decoration-11>
           <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
           <h3 style="font-size:25px">全球累计死亡：
-            <countTo :startVal="0" :endVal="3090" :duration="3000" separator="" class="num" style="font-weight:normal">
+            <countTo :startVal="0" :endVal="globalInfo.totDead" :duration="1000" separator="" class="num" style="font-weight:normal">
           </countTo></h3></dv-decoration-11>
         </div>
+        
       </el-container>
 
      <!-- 中间：3D地球 -->
@@ -104,6 +111,30 @@
         <dv-border-box-12 style="width: 700px" id="top10Chart">           
         </dv-border-box-12>
       </el-container>
+
+
+      <el-drawer
+          title="疫情数据发布"
+          :visible.sync="drawer"
+          direction="rtl"
+          :before-close="handleClose">
+
+        <el-select v-model="updateInfo.name" placeholder="请选择国家" style="margin;left: 25%; margin-bottom: 10px">
+          <el-option
+            v-for="item in allCountrys"
+            :key="item.name"
+            :label="item.name"
+            :value="item.name">
+          </el-option>
+        </el-select><br>
+        <el-input v-model="updateInfo.newConfirmed" placeholder="新增确诊" style="margin-left: 25%; margin-bottom: 10px; width: 50%"></el-input><br>
+        <el-input v-model="updateInfo.newDead"      placeholder="新增死亡" style="margin-left: 25%; margin-bottom: 10px; width: 50%"></el-input><br>
+        <el-input v-model="updateInfo.newCured"     placeholder="新增治愈" style="margin-left: 25%; margin-bottom: 10px; width: 50%"></el-input><br>
+        <el-button @click="confirmUpdate" style="margin-left: 25%;"><i style="color: black">发布数据</i></el-button>
+      </el-drawer>
+
+
+
     </el-container>
     </el-container>
     
@@ -147,15 +178,44 @@ export default {
         dateSequence: [],     /// 时间点序列
         totConfirmed: [],     /// 对应时间点的累计确诊
         totCured:     [],     /// 对应时间点的累计治愈
+      },
+      drawer: false,
+      allCountrys: nameMap,     /// 所有国家的名字
+      updateInfo: {
+        name: '',           /// 需要更新数据的国家名称
+        newConfirmed: 0,    /// 新增确诊
+        newDead: 0,         /// 新增死亡
+        newCured: 0         /// 新增治愈
+      },
+      globalInfo: {
+        totConfirmed: 0,
+        curConfirmed: 0,
+        totDead: 0
+
       }
     }
   },
   mounted() {
     this.getEachNationInfo()
     this.getGlobalInfo()
+    console.log(this.allCountrys)
     
   },
   methods: {
+    postNewData() {
+      this.drawer = true
+
+    },
+    handleClose() {
+      this.drawer = false
+    },
+    confirmUpdate() {
+      console.log(this.updateInfo)
+      this.globalInfo.totConfirmed += parseInt(this.updateInfo.newConfirmed)
+      this.globalInfo.curConfirmed += parseInt(this.updateInfo.newConfirmed)
+      this.globalInfo.totDead      += parseInt(this.updateInfo.newDead)
+      this.drawer = false
+    },
     getGlobalInfo() {
       let self = this
       this.$http({
@@ -258,9 +318,15 @@ export default {
       }).then(response => {
         console.log(response.data.data)
         self.eachCountryInfo = response.data.data
+        self.allCountrys = response.data.data.map(item => { return { name: item.name } })
         this.initData()
         for(var i = 0; i < 10; i++){
           self.top10Country.push(self.eachCountryInfo[i])
+        }
+        for(var i = 0; i < self.eachCountryInfo.length; i++){
+          self.globalInfo.totConfirmed += self.eachCountryInfo[i].totConfirmed
+          self.globalInfo.curConfirmed += self.eachCountryInfo[i].curConfirmed
+          self.globalInfo.totDead      += self.eachCountryInfo[i].deadCount
         }
       })
     },
@@ -491,9 +557,13 @@ export default {
               // 地图区域的多边形 图形样式
               itemStyle: {
                 // areaColor: '#7B68EE', // 地图区域的颜色 如果设置了visualMap，areaColor属性将不起作用
-                borderWidth: 0.5, // 描边线宽 为 0 时无描边
+                borderWidth: 1, // 描边线宽 为 0 时无描边
                 borderColor: '#000', // 图形的描边颜色 支持的颜色格式同 color，不支持回调函数
                 borderType: 'solid', // 描边类型，默认为实线，支持 'solid', 'dashed', 'dotted'
+                //    borderWidth: 5,//设置外层边框
+                // borderColor:'#9ffcff',
+                // shadowColor: '#00b7ff',
+                // shadowBlur: 10
                
               }, 
               label: {
@@ -507,7 +577,10 @@ export default {
                 },
                 itemStyle: {
                   areaColor: '#FF6347', // 地图区域的颜色
-                  borderColor: 'rgb(40, 120, 173)'
+                  borderWidth: 3,
+                  borderColor: 'rgb(0, 0, 0)',
+                  
+
                 }
               },
               // 自定义地区的名称映射
@@ -608,7 +681,6 @@ export default {
             distance: 240
           }
         },
-
       }
 
       //画图
@@ -667,6 +739,6 @@ h3 {
   font-size: 50px;
   margin-bottom: 10px;
   text-align: center; 
-  // color:#f3bd59
+  // color:#00b7ff
 }
 </style>
