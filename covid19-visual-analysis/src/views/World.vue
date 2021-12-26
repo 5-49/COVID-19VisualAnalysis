@@ -16,26 +16,22 @@
     <el-container style="height: 500px">
       <el-container style="width:25%;" direction="vertical">
 
-
-        <el-button @click="postNewData">发布新数据</el-button>
-
-
-
+        <el-button @click="postNewData" style="width:200px;margin-left:120px" round>发布新数据
+          <i class="el-icon-upload el-icon--right"></i></el-button>
         <div style="margin-left:30px;margin-top:0px">
           <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
-          <h3 style="font-size:25px">全球累计确诊：
+          <h3 style="font-size:22px">全球累计确诊：
             <countTo :startVal="0" :endVal="globalInfo.totConfirmed" :duration="1000" separator="" class="num" style="font-weight:normal">
           </countTo></h3></dv-decoration-11>
           <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
-          <h3 style="font-size:25px">全球现存确诊：
+          <h3 style="font-size:22px">全球现存确诊：
             <countTo :startVal="0" :endVal="globalInfo.curConfirmed" :duration="1000" separator="" class="num" style="font-weight:normal">
           </countTo></h3></dv-decoration-11>
           <dv-decoration-11 style="width:400px;height:100px;margin:50px 0px">
-          <h3 style="font-size:25px">全球累计死亡：
+          <h3 style="font-size:22px">全球累计死亡：
             <countTo :startVal="0" :endVal="globalInfo.totDead" :duration="1000" separator="" class="num" style="font-weight:normal">
           </countTo></h3></dv-decoration-11>
         </div>
-        
       </el-container>
 
      <!-- 中间：3D地球 -->
@@ -114,11 +110,12 @@
 
 
       <el-drawer
-          title="疫情数据发布"
           :visible.sync="drawer"
           direction="rtl"
           :before-close="handleClose">
-
+        <div align="center" style="margin-top:5px;margin-bottom:10px;font-family:zcool;font-size:40px;color:#00ffff"> 
+          新增数据
+        </div>
         <el-select v-model="updateInfo.name" placeholder="请选择国家" style="margin;left: 25%; margin-bottom: 10px">
           <el-option
             v-for="item in allCountrys"
@@ -127,18 +124,13 @@
             :value="item.name">
           </el-option>
         </el-select><br>
-        <el-input v-model="updateInfo.newConfirmed" placeholder="新增确诊" style="margin-left: 25%; margin-bottom: 10px; width: 50%"></el-input><br>
-        <el-input v-model="updateInfo.newDead"      placeholder="新增死亡" style="margin-left: 25%; margin-bottom: 10px; width: 50%"></el-input><br>
-        <el-input v-model="updateInfo.newCured"     placeholder="新增治愈" style="margin-left: 25%; margin-bottom: 10px; width: 50%"></el-input><br>
-        <el-button @click="confirmUpdate" style="margin-left: 25%;"><i style="color: black">发布数据</i></el-button>
+        <el-input v-model="updateInfo.newConfirmed" placeholder="新增确诊" style="margin-left: 25%; margin-bottom: 10px; width: 49%"></el-input><br>
+        <el-input v-model="updateInfo.newDead"      placeholder="新增死亡" style="margin-left: 25%; margin-bottom: 10px; width: 49%"></el-input><br>
+        <el-input v-model="updateInfo.newCured"     placeholder="新增治愈" style="margin-left: 25%; margin-bottom: 10px; width: 49%"></el-input><br>
+        <el-button @click="confirmUpdate" style="margin-right: 25%; float:right">发布数据</el-button>
       </el-drawer>
-
-
-
     </el-container>
     </el-container>
-    
-
   </el-container>
    </el-container>
 </template>
@@ -147,8 +139,6 @@
 
 import {nameMap} from '../assets/world.json'
 import {dataArr} from '../assets/world.json'
-import axios from 'axios'
-import moment from 'moment'
 import predictData from '../../public/predict.json'
 import countTo from 'vue-count-to'
 
@@ -183,9 +173,9 @@ export default {
       allCountrys: nameMap,     /// 所有国家的名字
       updateInfo: {
         name: '',           /// 需要更新数据的国家名称
-        newConfirmed: 0,    /// 新增确诊
-        newDead: 0,         /// 新增死亡
-        newCured: 0         /// 新增治愈
+        newConfirmed: '',    /// 新增确诊
+        newDead: '',         /// 新增死亡
+        newCured: ''         /// 新增治愈
       },
       globalInfo: {
         totConfirmed: 0,
@@ -698,14 +688,13 @@ export default {
 <style lang="less" scoped>
 
 .el-button {
-  background: transparent;
-  color: rgb(255, 255, 255);
+  background: #6bc3e63f;
+  color: #96fcdd;
   font-weight: 1000;
-
+  border: 1px solid #96fcdd;
 }
-
 .el-button:hover {
-  color:rgb(54, 173, 209)
+  color:rgb(255, 255, 255)
 }
 
 /deep/ .el-table {
@@ -728,10 +717,14 @@ export default {
 /deep/ .el-table--enable-row-hover .el-table__body tr:hover>td{
     color: rgb(0, 0, 0)
 }
-
 h3 {
   // font-family: zcool;
   color: #96dee8;
+}
+/deep/ .el-input__inner{
+  background-color: #5cceff75 !important;
+  border: 0px solid #DCDFE6 !important;
+  color: #ffffff !important;
 }
 .headline{
   color: #6be6c1;
@@ -741,4 +734,14 @@ h3 {
   text-align: center; 
   // color:#00b7ff
 }
+/deep/ .el-drawer {
+    position: absolute;
+    box-sizing: border-box;
+    background-color: rgba(135, 199, 224, 0.466)!important;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 10px -5px rgb(0 0 0 / 20%), 0 16px 24px 2px rgb(0 0 0 / 14%), 0 6px 30px 5px rgb(0 0 0 / 12%);
+    outline: 0;
+}
+
 </style>
