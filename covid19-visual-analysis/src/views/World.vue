@@ -182,7 +182,8 @@ export default {
         curConfirmed: 0,
         totDead: 0
 
-      }
+      },
+      predict: Array             //预测数组
     }
   },
   mounted() {
@@ -208,6 +209,7 @@ export default {
     },
     getGlobalInfo() {
       let self = this
+      this.predict=predictData.predictData
       this.$http({
         method: 'get',
         url: 'http://101.132.138.14:8082/globalCountry/getGlobalInformationBySlot',
@@ -217,6 +219,7 @@ export default {
           endTime: '2021-11-24 17:00:00'
         }
       }).then(response => {
+        console.log(response.data)
         console.log(response.data.data)
         var dateSequence = []
         var totConfirmed = []
@@ -242,6 +245,12 @@ export default {
               restore: { show: true },
               saveAsImage: { show: true }
             }
+          },
+          legend: {
+            textStyle: {
+              color: "#fff"
+            },
+            data: ['累计确诊','累计治愈','累计确诊趋势']
           },
           xAxis: [
             {
@@ -322,6 +331,7 @@ export default {
     },
     handleRowClick(row) {
       console.log(row.id)
+      this.predict=predictData.predictData
       this.$http({
         method: 'get',
         url: 'http://101.132.138.14:8082/globalCountry/getOneCountryInformationBySlot',
@@ -337,7 +347,15 @@ export default {
         var dateSequence = []
         var totConfirmed = []
         var totCured     = []
+        var country_predict = 0
+        for (var item in this.predict) {
+          if (this.predict[item].name == row.name) {
+            country_predict = this.predict[item].data[6];
+          }
+        }
+        console.log(country_predict)
         dateSequence = response.data.data.map(item =>{ return item.updatedTime.slice(5, 10)})
+        dateSequence.push("12-05")
         totConfirmed = response.data.data.map(item =>{ return item.totConfirmed})
         totCured = response.data.data.map(item =>{ return item.curedCount})
         var top10Chart = this.$echarts.init(document.getElementById('top10Chart'),'walden');
@@ -358,6 +376,12 @@ export default {
               restore: { show: true },
               saveAsImage: { show: true }
             }
+          },
+          legend: {
+            textStyle: {
+              color: "#fff"
+            },
+            data: ['累计确诊','累计治愈', '预测确诊','累计确诊趋势','预测确诊趋势']
           },
           xAxis: [
             {
@@ -397,6 +421,18 @@ export default {
               data: totConfirmed
             },
             {
+              name: '预测确诊',
+              type: 'bar',
+              data: [
+                "-", "-", "-","-","-","-","-","-","-","-","-", parseInt(country_predict)
+              ],
+              itemStyle: {
+                normal:{
+                  color: "#ff7f50"
+                }
+              }
+            },
+            {
               name: '累计治愈',
               type: 'bar',
               data: totCured
@@ -406,7 +442,24 @@ export default {
               type: 'line',
               yAxisIndex: 0,
               data: totConfirmed
+            },
+            {
+            name: '预测确诊趋势',
+            type: 'line',
+            smooth: false,
+            yAxisIndex: 0,
+            data: [
+              "-", "-", "-","-","-","-","-","-","-","-",totConfirmed[10], parseInt(country_predict)
+            ],
+            itemStyle: {
+              normal:{
+                color: "#dcdcdc",
+                lineStyle: {
+                  type: 'dotted'
+                }
+              }
             }
+          }
           ]
         };
         top10Chart.setOption(top10Option)

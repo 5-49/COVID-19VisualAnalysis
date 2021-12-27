@@ -21,13 +21,14 @@
         </div>
       </div>
     </div>
-    <div v-for="(country,index) in predict" :key="index">
+    <!-- <div v-for="(country,index) in predict" :key="index">
       <span v-if="country.name === '美国'">
         {{parseInt(country.data[0])}}
       </span>
       <br>
       <br>
-    </div>
+    </div> -->
+    <div id="Predict" style="width:800px; height:500px;"></div>
   </div>
 </template>
 
@@ -184,6 +185,148 @@ export default{
     },
     getPredict(){
       this.predict=predictData.predictData
+      console.log(this.predict[0].data[0])
+      let option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            crossStyle: {
+              color: '#fff'
+            }
+          }
+        },
+        toolbox: {
+          feature: {
+            dataView: { show: true, readOnly: false },
+            magicType: { show: true, type: ['line', 'bar'] },
+            restore: { show: true },
+            saveAsImage: { show: true }
+          }
+        },
+        legend: {
+          textStyle: {
+            color: "#fff"
+          },
+          data: ['累计确诊人数', '预测确诊人数', '增长率','预测增长率']
+        },
+        xAxis: [
+          {
+            type: 'category',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            axisLine: {
+              lineStyle: {
+                color: "#fff"
+              }
+            },
+            axisPointer: {
+              type: 'shadow'
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: '累计确诊人数',
+            min: 0,
+            max: 100000000,
+            interval: 50,
+            axisLine: {
+              lineStyle: {
+                color: "#fff"
+              }
+            },
+            axisLabel: {
+              formatter: '{value} K'
+            }
+          },
+          {
+            type: 'value',
+            name: '增长率',
+            min: 0,
+            max: 25,
+            interval: 5,
+            axisLine: {
+              lineStyle: {
+                color: "#fff"
+              }
+            },
+            axisLabel: {
+              formatter: '{value} %'
+            }
+          }
+        ],
+        series: [
+          {
+            name: '累计确诊人数',
+            type: 'bar',
+            data: [
+              parseInt(this.predict[0].data[0]),
+              parseInt(this.predict[0].data[1]),
+              parseInt(this.predict[0].data[2]),
+              parseInt(this.predict[0].data[3]),
+              parseInt(this.predict[0].data[4]),
+              parseInt(this.predict[0].data[5]),
+              "-"
+            ],
+            itemStyle: {
+              normal:{
+                color: "#fffacd"
+              }
+            }
+          },
+          {
+            name: '预测确诊人数',
+            type: 'bar',
+            data: [
+              "-", "-", "-","-","-","-", parseInt(this.predict[0].data[6])
+            ],
+            itemStyle: {
+              normal:{
+                color: "#ff7f50"
+              }
+            }
+          },
+          {
+            name: '增长率',
+            type: 'line',
+            yAxisIndex: 1,
+            data: [
+              parseInt(this.predict[0].data[0]),
+              parseInt(this.predict[0].data[1]),
+              parseInt(this.predict[0].data[2]),
+              parseInt(this.predict[0].data[3]),
+              parseInt(this.predict[0].data[4]),
+              parseInt(this.predict[0].data[5]),
+              "-"
+            ],
+            itemStyle: {
+              normal:{
+                color: "#dcdcdc"
+              }
+            }
+          },
+          {
+            name: '预测增长率',
+            type: 'line',
+            smooth: false,
+            yAxisIndex: 1,
+            data: [
+              "-", "-", "-","-","-","-", parseInt(this.predict[0].data[6])
+            ],
+            itemStyle: {
+              normal:{
+                color: "#dcdcdc",
+                lineStyle: {
+                  type: 'dotted'
+                }
+              }
+            }
+          }
+        ]
+      }
+      let mychart = this.$echarts.init(document.getElementById('Predict'))
+      mychart.setOption(option)
     }
   },
   mounted(){
