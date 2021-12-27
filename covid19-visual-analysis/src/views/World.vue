@@ -214,6 +214,12 @@ export default {
       this.globalInfo.totConfirmed += parseInt(this.updateInfo.newConfirmed)
       this.globalInfo.curConfirmed += parseInt(this.updateInfo.newConfirmed)
       this.globalInfo.totDead      += parseInt(this.updateInfo.newDead)
+
+      var countryIndex = (this.allCountrys || []).findIndex(item => item.name === this.updateInfo.name)
+      this.eachCountryInfo[countryIndex].curConfirmed += this.updateInfo.newConfirmed
+      this.eachCountryInfo[countryIndex].totConfirmed += this.updateInfo.newConfirmed
+      this.eachCountryInfo[countryIndex].totDead      += this.updateInfo.newDead
+      this.initData()
       this.drawer = false
     },
     getGlobalInfo() {
@@ -599,6 +605,7 @@ export default {
             }
           ]
       });
+      
       mapChart.on('mouseover', function(params){
         // console.log(params.data.name)  //这里的params是鼠标悬浮的图表节点的数据
         
@@ -622,7 +629,8 @@ export default {
         }
 
       })
-            
+      var op = mapChart.getOption()
+      console.log(op)
       //echarts 3D地球配置
       let option = {
 
