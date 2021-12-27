@@ -10,6 +10,7 @@
           数据可视化
         </div>
         <dv-decoration-5 class="headline" :dur="3"  :color="['#3fb1e3', '#96dee8']" style="width:1000px; height:150px; margin:0 auto" />
+     
 
   <el-container direction="vertical">
     <!-- 本页面第一部分：全球热力图 -->
@@ -183,8 +184,13 @@ export default {
         totDead: 0
 
       },
-      predict: Array             //预测数组
+      predict: Array,             //预测数组
+      dataList: [],
+
     }
+  },
+  computed: {
+   
   },
   mounted() {
     this.getEachNationInfo()
@@ -211,6 +217,7 @@ export default {
       this.eachCountryInfo[countryIndex].totConfirmed += this.updateInfo.newConfirmed
       this.eachCountryInfo[countryIndex].totDead      += this.updateInfo.newDead
       this.initData()
+      this.dataList.push(this.updateInfo.name + ":\n新增确诊：" + this.updateInfo.newConfirmed + "\n新增死亡：" + this.updateInfo.newDead + "\n新增治愈：" + this.updateInfo.newCured)
       this.drawer = false
     },
     getGlobalInfo() {
