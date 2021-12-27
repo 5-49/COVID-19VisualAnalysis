@@ -15,17 +15,17 @@
       <dv-decoration-12  style="width:270px;height:270px;margin-left:18px;">
         <h1 class="text_headline" style="color: #00efff;  text-align: center;font-weight:normal">
           现有确诊<br> 
-          <countTo :startVal='startVal' :endVal='2880' :duration='3000' separator="" class="num" style="font-weight:normal">
+          <countTo :startVal='0' :endVal='2880' :duration='3000' separator="" class="num" style="font-weight:normal">
           </countTo>
           <br> 累计确诊<br> 
-          <countTo :startVal='startVal' :endVal='127687' :duration='3000' separator="" class="num" style="font-weight:normal">
+          <countTo :startVal='0' :endVal='127687' :duration='3000' separator="" class="num" style="font-weight:normal">
           </countTo>
       </h1></dv-decoration-12>  
 
       <div class="text_headline" style="margin:30px 0px;margin-left:70px;">治愈率和死亡率</div>
 
       <!-- 水位图 -->
-      <el-container style="">
+      <el-container style="margin-left:30px">
         <dv-water-level-pond :config="cure_percent" style="width:100px;height:150px;margin-left:30px" />
         <dv-water-level-pond :config="dead_percent" style="width:100px;height:150px;margin-left:30px" />
       </el-container>
@@ -47,22 +47,31 @@
     </div>
 <!-- <dv-decoration-10 style="width:96%;height:5px;margin:30px;" /> -->
 <el-container>
-  <!-- 这是是新闻播报的左边 -->
   <el-container direction="vertical">
+    
     <!-- 这是上面两个折线图 -->
     <el-container style="height:100%; width:100%; ">    
       <dv-border-box-12 style="height:100%; width:49%;margin-left:8px;padding:20px 0px 0px 20px">
         <div class="text">全国疫情实时数据</div>
-        <div style="width:450px;height:400px" ref="cur_chart" class="chart"></div>
+        <div style="width:470px;height:400px" ref="cur_chart" class="chart"></div>
       </dv-border-box-12>
 
       <dv-border-box-12 style="height:100%; width:49%;margin-right:20px;margin-left:20px;padding:20px 0px 0px 20px">
         <div class="text">全国疫情累计数据</div>
-        <div style="width:450px;height:400px" ref="tot_chart" class="chart"></div>
+        <div style="width:470px;height:400px" ref="tot_chart" class="chart"></div>
       </dv-border-box-12>
     </el-container>
 
     <dv-decoration-10 style="width:96%;height:5px;margin-top:50px;" />
+
+    <!-- 这是邮件发送框 -->
+    <el-container style="margin-bottom:15px;margin-top:30px;">
+      <div style="margin-top:5px;margin-bottom:5px;margin-left:35px;font-family:zcool;font-size:30px;color:#00ffff;width:25%"> 
+          邮件订阅省疫情信息:
+      </div>
+      <el-input v-model="userEmail"  placeholder="请输入您的邮箱" style=" margin-right:30px;width:50%"></el-input>
+      <el-button @click="send" round style="height:40px" class="el-button1">发送</el-button>
+    </el-container>
 
     <!-- 这是下面省展示 -->
     <el-container>
@@ -198,7 +207,12 @@ export default {
           "deadPercent": '2%',
         }
       ],
-      list: Array
+      list: Array,
+
+      emailInfo:"",
+      userEmail:""
+
+      
     }
   },
   methods: {
@@ -237,7 +251,7 @@ export default {
         },
         visualMap: {
             min: 0,
-            max: 500,
+            max: 200,
             left: 'left',
             top: 'bottom',
             text: ['高', '低'],//取值范围的文字
@@ -316,7 +330,7 @@ export default {
       let option = {
         visualMap: {
             min: 0,
-            max: 500,
+            max: 200,
             left: 'left',
             top: 'bottom',
             text: ['高', '低'],//取值范围的文字
@@ -870,6 +884,49 @@ export default {
         this.list=res.data.newslist
         console.log(this.list)
       })
+    },
+    async send(){
+      // 开始向服务器请求
+      await this.$http.post('/MQTT/setSendEmail', 
+        {params: 
+          { email:this.userEmail,
+            emailTopic:'全国各省疫情现状' }
+        }
+      )
+
+      this.send2()
+      //this.setTimeout(this.send2(),500);
+      // this.$http.
+      //   post('/MQTT/setSendEmail?email=eess6%40163.com&emailTopic=111', 
+      // )
+    },
+    async send2(){
+      await this.$http.get('/MQTT/subscribe', 
+        {params: 
+          { topic:'全国各省疫情现状' }
+        }
+      )
+
+      this.send3()
+      //this.setTimeout(this.send3(),500);
+    },
+    async send3(){
+      // 这下面是邮件内容的处理
+      this.emailInfo="截止2021年11月27号，各省疫情情况如下：\n\n"
+      var i
+      for(i=0;i<this.provinInfo.length;i++){
+        this.emailInfo = this.emailInfo + `${this.provinInfo[i].name}` + "现有确诊人数：" + `${this.provinInfo[i].curConfirmed}` 
+        + "    累计确诊人数：" + `${this.provinInfo[i].totConfirmed}`+ '\n'
+      }
+      console.log(this.emailInfo)
+
+      await this.$http.post('/MQTT/sendTo', 
+        {params: 
+          { infomation:this.emailInfo,
+            emailTopic:'全国各省疫情现状' }
+        }
+      )
+
     }
   },
   //转换时间戳
@@ -880,7 +937,7 @@ export default {
   },
   mounted(){
     this,this.initTable()
-    this.drawCNMap() // 在页面进入的时候，先请求后端数据再调用这个函数，但由于我这里是写死的假数据，于是就直接调用了
+    this.drawCNMap()
     this.drawCNLine()
     this.drawProviGraph()
     this.getNews()
@@ -890,6 +947,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.el-button1 {
+  background: #6bc3e63f;
+  color: #96fcdd;
+  font-weight: 1000;
+  border: 1px solid #96fcdd;
+}
+.el-button:hover {
+  color:rgb(255, 255, 255)
+}
 .text{
   color: #96dee8;
   font-family: 'zcool';
