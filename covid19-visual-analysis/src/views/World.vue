@@ -381,7 +381,7 @@ export default {
             textStyle: {
               color: "#fff"
             },
-            data: ['累计确诊','累计治愈', '预测确诊','累计确诊趋势']
+            data: ['累计确诊','累计治愈', '预测确诊','累计确诊趋势','预测确诊趋势']
           },
           xAxis: [
             {
@@ -442,7 +442,24 @@ export default {
               type: 'line',
               yAxisIndex: 0,
               data: totConfirmed
+            },
+            {
+            name: '预测确诊趋势',
+            type: 'line',
+            smooth: false,
+            yAxisIndex: 0,
+            data: [
+              "-", "-", "-","-","-","-","-","-","-","-",totConfirmed[10], parseInt(country_predict)
+            ],
+            itemStyle: {
+              normal:{
+                color: "#dcdcdc",
+                lineStyle: {
+                  type: 'dotted'
+                }
+              }
             }
+          }
           ]
         };
         top10Chart.setOption(top10Option)
