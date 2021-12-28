@@ -327,12 +327,26 @@ export default{
       }
       let mychart = this.$echarts.init(document.getElementById('Predict'))
       mychart.setOption(option)
+    },
+    drawCNLine(){
+      //获取全国各省的累计确诊provi_tot_confi
+      this.$http({
+        method: 'get',
+        url: 'http://101.132.138.14:8082/countryGeographyInformation/getChinaInformation',
+        params: {
+          beginTime: '2021-01-24 17:00:00',
+          endTime: '2021-11-24 17:00:00'
+        }
+      }).then(response => {
+        console.log(response)
+        })
     }
   },
   mounted(){
     this.drawCNMap() 
     this.getNews()
     this.getPredict()
+    this.drawCNLine()
   }
 }
 </script>
