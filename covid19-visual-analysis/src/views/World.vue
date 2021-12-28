@@ -213,11 +213,18 @@ export default {
       this.globalInfo.totDead      += parseInt(this.updateInfo.newDead)
 
       var countryIndex = (this.allCountrys || []).findIndex(item => item.name === this.updateInfo.name)
-      this.eachCountryInfo[countryIndex].curConfirmed += this.updateInfo.newConfirmed
-      this.eachCountryInfo[countryIndex].totConfirmed += this.updateInfo.newConfirmed
-      this.eachCountryInfo[countryIndex].totDead      += this.updateInfo.newDead
+      this.eachCountryInfo[countryIndex].curConfirmed += parseInt(this.updateInfo.newConfirmed)
+      this.eachCountryInfo[countryIndex].totConfirmed += parseInt(this.updateInfo.newConfirmed)
+      this.eachCountryInfo[countryIndex].totDead      += parseInt(this.updateInfo.newDead)
+      this.eachCountryInfo[countryIndex].curedCount   += parseInt(this.updateInfo.newCured)
       this.initData()
-      this.dataList.push(this.updateInfo.name + ":\n新增确诊：" + this.updateInfo.newConfirmed + "\n新增死亡：" + this.updateInfo.newDead + "\n新增治愈：" + this.updateInfo.newCured)
+      // this.dataList.push(this.updateInfo.name + ":\n新增确诊：" + this.updateInfo.newConfirmed + "\n新增死亡：" + this.updateInfo.newDead + "\n新增治愈：" + this.updateInfo.newCured)
+      console.log(this.curCountry)
+      this.curCountry.countryName = this.updateInfo.name
+      this.curCountry.curNum      = this.eachCountryInfo[countryIndex].curConfirmed
+      this.curCountry.tolNum      = this.eachCountryInfo[countryIndex].totConfirmed
+      this.curCountry.cureNum     = this.eachCountryInfo[countryIndex].curedCount
+      this.curCountry.curedRate   = this.eachCountryInfo[countryIndex].curedRate
       this.drawer = false
     },
     getGlobalInfo() {
