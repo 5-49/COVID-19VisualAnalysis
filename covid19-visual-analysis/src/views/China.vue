@@ -1084,7 +1084,7 @@ a {
   height: calc(100% - 60px);
   position: fixed;
   top: 70px;
-  bottom: 0;
+  bottom: 20px;
   right: 0;
   background: #152c4c99;
   color: white;
