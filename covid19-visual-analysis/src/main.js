@@ -69,7 +69,7 @@ Vue.prototype.$http=axios
 Vue.use(moment)
 Vue.use(predictData)
 // Vue.use(vueSeamlessScroll)
-axios.defaults.baseURL = 'http://100.79.163.182:8082/'
+axios.defaults.baseURL = 'http://101.132.138.14:8082/'
 
 new Vue({
   router,
