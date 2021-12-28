@@ -1,7 +1,7 @@
 <template>
 <div>
   <!-- 切换热力图按钮 -->
-    <el-container style="position:relative;left:420px;">
+    <el-container style="position:relative;left:420px;margin-left:50px;width:600px">
     <dv-decoration-11 style="width:220px;height:50px;">
             <el-button type="text" class="info_text" @click="drawCNCurData" style="font-size:22px" >现有确诊</el-button></dv-decoration-11>
     <dv-decoration-11 style="width:220px;height:50px;">
@@ -10,8 +10,8 @@
 
   <el-container>
     <!-- 两个重要数据展示 -->
-    <el-container direction="vertical" style="width:30%">
-      <dv-decoration-12  style="width:270px;height:270px;margin-left:18px;">
+    <el-container direction="vertical" style="width:30%;margin-left:20px">
+      <dv-decoration-12  style="width:270px;height:270px;margin-left:18px;margin-left:50px">
         <h1 class="text_headline" style="color: #00efff;  text-align: center;font-weight:normal">
           现有确诊<br> 
           <countTo :startVal='0' :endVal='2880' :duration='3000' separator="" class="num" style="font-weight:normal">
@@ -31,7 +31,7 @@
     </el-container>
 
     <!-- 热力图 -->
-    <div id="CN_MapCharts" style="width:50%; height:500px;position:relative; left:-300px"></div>
+    <div id="CN_MapCharts" style="width:60%; height:500px;position:relative; left:-300px"></div>
   </el-container>
 
  <div class="d-flex jc-center" style="width:80%">
@@ -49,15 +49,15 @@
   <el-container direction="vertical">
     
     <!-- 这是上面两个折线图 -->
-    <el-container style="height:100%; width:100%; ">    
+    <el-container style="height:470px; width:100%; ">    
       <dv-border-box-12 style="height:100%; width:49%;margin-left:8px;padding:20px 0px 0px 20px">
         <div class="text">全国疫情实时数据</div>
-        <div style="width:470px;height:400px" ref="cur_chart" class="chart"></div>
+        <div style="width:520px;height:400px;margin-left:30px" ref="cur_chart" class="chart"></div>
       </dv-border-box-12>
 
-      <dv-border-box-12 style="height:100%; width:49%;margin-right:20px;margin-left:20px;padding:20px 0px 0px 20px">
+      <dv-border-box-12 style="height:100%; width:47%;margin-right:30px;margin-left:20px;padding:20px 0px 0px 20px">
         <div class="text">全国疫情累计数据</div>
-        <div style="width:470px;height:400px" ref="tot_chart" class="chart"></div>
+        <div style="width:520px;height:400px;margin-left:30px" ref="tot_chart" class="chart"></div>
       </dv-border-box-12>
     </el-container>
 
@@ -75,7 +75,7 @@
     <!-- 这是下面省展示 -->
     <el-container>
       <!-- 这是表格 -->
-      <div class="table-wrapper" style="width: 50%; margin-top:20px;height:750px;">
+      <div class="table-wrapper" style="width: 53%; margin-top:20px;height:750px;">
       <el-table
           :cell-style="cellStyle"
           @row-click="handleRowClick"
@@ -100,7 +100,7 @@
       </div>
 
         <!-- 这是省详细数据展示 -->
-        <dv-border-box-1 style="width:48%; margin-top:20px; height:750px;">
+        <dv-border-box-1 style="width:43%; margin-top:20px; height:750px;">
           <div class="text_headline" style="position:relative; left:30px;top:20px">{{this.chosen_provi}}确诊情况</div>
           <!-- 热力图切换按钮 -->
           <el-container style="position:relative;left:40px;margin-top:30px">
@@ -114,8 +114,8 @@
               </el-button></dv-border-box-8>
           </el-container>
           <!-- 热力图显示 -->
-          <div id="provin_MapCharts" ref="provin_MapCharts" style="width:500px;height:350px;margin-left:50px;"></div>
-          <div id="provin_BarCharts" ref="provin_BarCharts" style="width:490px;height:300px;margin-left:10px;"></div>
+          <div id="provin_MapCharts" ref="provin_MapCharts" style="width:600px;height:350px;margin-left:50px;"></div>
+          <div id="provin_BarCharts" ref="provin_BarCharts" style="width:520px;height:300px;margin-left:10px;"></div>
 
         </dv-border-box-1>
     </el-container>
@@ -1081,10 +1081,10 @@ a {
 }
 .news_container {
   width: 20%;
-  height: calc(100% - 60px);
+  height: calc(100% - 100px);
   position: fixed;
   top: 70px;
-  bottom: 0;
+  bottom: 70px;
   right: 0;
   background: #152c4c99;
   color: white;

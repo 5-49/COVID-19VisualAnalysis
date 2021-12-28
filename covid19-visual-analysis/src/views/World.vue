@@ -81,11 +81,13 @@
     <el-container class="top_chart">
     <el-container>
       <!-- 左边：表格展示 -->
-      <el-container class="table-wrapper" style="width: 50%; margin-top:80px; margin-left: 10px;">
+      <el-container class="table-wrapper" style="width: 50%; margin-top:80px; margin-left: 40px;">
         <el-table
             :data="top10Country"
             @row-click="handleRowClick"
+            :row-style="{height: '50px'}"
             size="mini"
+            
           >
             <el-table-column prop="name" label="国家" >
             </el-table-column>
@@ -104,8 +106,8 @@
         </el-table>
       </el-container>
       <!-- 右边：渲染具体图标 -->
-      <el-container style="width: 50%; height: 600px;  float: right; margin-left: 80px; margin-top: 20px">
-        <dv-border-box-12 style="width: 700px" id="top10Chart">           
+      <el-container style="width: 50%; height: 600px;  float: right; margin-left: 100px; margin-top: 20px">
+        <dv-border-box-12 style="width: 800px; margin-left: 0px; margin-top: 40px" id="top10Chart">           
         </dv-border-box-12>
       </el-container>
 
@@ -216,12 +218,14 @@ export default {
       this.eachCountryInfo[countryIndex].curConfirmed += parseInt(this.updateInfo.newConfirmed)
       this.eachCountryInfo[countryIndex].totConfirmed += parseInt(this.updateInfo.newConfirmed)
       this.eachCountryInfo[countryIndex].totDead      += parseInt(this.updateInfo.newDead)
+      this.eachCountryInfo[countryIndex].curedCount   += parseInt(this.updateInfo.newCured)
       this.initData()
-      this.dataList.push(this.updateInfo.name + ":\n新增确诊：" + this.updateInfo.newConfirmed + "\n新增死亡：" + this.updateInfo.newDead + "\n新增治愈：" + this.updateInfo.newCured)
+      // this.dataList.push(this.updateInfo.name + ":\n新增确诊：" + this.updateInfo.newConfirmed + "\n新增死亡：" + this.updateInfo.newDead + "\n新增治愈：" + this.updateInfo.newCured)
       console.log(this.curCountry)
       this.curCountry.countryName = this.updateInfo.name
       this.curCountry.curNum      = this.eachCountryInfo[countryIndex].curConfirmed
-      this.curCountry.totNum      = this.eachCountryInfo[countryIndex].totConfirmed
+      this.curCountry.tolNum      = this.eachCountryInfo[countryIndex].totConfirmed
+      this.curCountry.cureNum     = this.eachCountryInfo[countryIndex].curedCount
       this.curCountry.curedRate   = this.eachCountryInfo[countryIndex].curedRate
       this.drawer = false
     },
@@ -500,9 +504,9 @@ export default {
         },
         toolbox: {
           feature: {
-            dataView: { show: true, readOnly: false },
+            dataView: { show: false, readOnly: false },
             magicType: { show: true, type: ['line', 'bar'] },
-            restore: { show: true },
+            restore: { show: false },
             saveAsImage: { show: true }
           }
         },
