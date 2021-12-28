@@ -155,6 +155,7 @@
 import axios from 'axios'
 import moment from 'moment'
 import countTo from 'vue-count-to'
+import predictData from '../../public/predict.json'
 
 export default {
   components: {
@@ -208,6 +209,7 @@ export default {
         }
       ],
       list: Array,
+      predict: Array,             //预测数组
 
       emailInfo:"",
       userEmail:""
@@ -391,6 +393,7 @@ export default {
     },
     //全国的两个折线图
     async drawCNLine(){
+      this.predict=predictData.predictData
       //获取全国各省的累计确诊provi_tot_confi
       const { data: res } =await this.$http.
         get('/countryGeographyInformation/getChinaInformation', 
@@ -401,6 +404,43 @@ export default {
       )
       console.log(res)
       this.CN_data = res.data
+      var dateSequence = []
+      var totConfirmed = []
+      var country_predict = []
+
+      totConfirmed = this.CN_data.map(function (item) {
+              return item.totConfirmed;
+            })
+      var i=0
+      for (var item in totConfirmed){
+        country_predict.push("-");
+        if (i == totConfirmed.length-1){
+          country_predict[i]=totConfirmed[i];
+        }
+        i=i+1;
+      }
+      for (var item in this.predict) {
+        if (this.predict[item].name == "中国") {
+          country_predict.push(parseInt(this.predict[item].data[0]));
+          country_predict.push(parseInt(this.predict[item].data[1]));
+          country_predict.push(parseInt(this.predict[item].data[2]));
+          country_predict.push(parseInt(this.predict[item].data[3]));
+          country_predict.push(parseInt(this.predict[item].data[4]));
+          country_predict.push(parseInt(this.predict[item].data[5]));
+          country_predict.push(parseInt(this.predict[item].data[6]));
+        }
+      }
+      console.log(country_predict)
+      dateSequence = this.CN_data.map(function (item) {
+              return item.time;})
+      dateSequence.push("2021-11-28T09:41:10.000+00:00")
+      dateSequence.push("2021-11-29T09:41:10.000+00:00")
+      dateSequence.push("2021-11-30T09:41:10.000+00:00")
+      dateSequence.push("2021-12-01T09:41:10.000+00:00")
+      dateSequence.push("2021-12-02T09:41:10.000+00:00")
+      dateSequence.push("2021-12-03T09:41:10.000+00:00")
+      dateSequence.push("2021-12-04T09:41:10.000+00:00")
+      dateSequence.push("2021-12-05T09:41:10.000+00:00")
       console.log(this.CN_data)
 
       let myChart0 = this.$echarts.init(this.$refs.cur_chart,'walden');
@@ -469,6 +509,7 @@ export default {
         ]
         //结束
       });　
+
       myChart1.setOption({
       animationDuration: 10000,
       //图表开始
@@ -479,7 +520,7 @@ export default {
               }
           },
           legend: {
-            data: ['累计确诊', '累计治愈','累计死亡']
+            data: ['累计确诊', '预测确诊','累计治愈','累计死亡']
           },
           toolbox: {
               feature: {
@@ -492,15 +533,15 @@ export default {
           },
           xAxis: {
               type: 'category',
-              data: this.CN_data.map(function (item) {
-              return item.time;
-            }),
+              data: dateSequence,
               boundaryGap: false
           },
-          yAxis: {
-              type: 'value',       
+          yAxis: [
+            {
+              type: 'value',     
               boundaryGap: [0, '100%']
-          },
+          }
+          ],
           dataZoom: [
               {
                   type: 'inside',
@@ -518,6 +559,12 @@ export default {
               data: this.CN_data.map(function (item) {
               return item.totConfirmed;
             }),
+              symbol: 'none',
+              type: 'line',
+            },
+            { 
+              name:'预测确诊',
+              data: country_predict,
               symbol: 'none',
               type: 'line',
             },
