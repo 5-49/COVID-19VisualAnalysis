@@ -8,7 +8,6 @@
             <el-button type="text" class="info_text" @click="drawCNTotData" style="font-size:22px" >累计确诊</el-button></dv-decoration-11>
   </el-container>
 
- 
   <el-container>
     <!-- 两个重要数据展示 -->
     <el-container direction="vertical" style="width:30%">
@@ -886,31 +885,50 @@ export default {
       })
     },
     async send(){
-      // 开始向服务器请求
-      await this.$http.post('/MQTT/setSendEmail', 
-        {params: 
-          { email:this.userEmail,
-            emailTopic:'全国各省疫情现状' }
-        }
-      )
-
-      this.send2()
+      //await this.$http.delete('/MQTT/disconnect')
+      
+      this.send1()
       //this.setTimeout(this.send2(),500);
       // this.$http.
       //   post('/MQTT/setSendEmail?email=eess6%40163.com&emailTopic=111', 
       // )
     },
-    async send2(){
-      await this.$http.get('/MQTT/subscribe', 
-        {params: 
-          { topic:'全国各省疫情现状' }
-        }
-      )
+    async send1(){
+      // 开始向服务器请求
+      // await this.$http.post('/MQTT/setSendEmail', 
+      
+      //     { 
+      //       email:this.userEmail,
+      //       emailTopic:'全国各省疫情现状' }
+          
+      // )
 
-      this.send3()
-      //this.setTimeout(this.send3(),500);
+      await axios({
+        url: '/MQTT/setSendEmail',
+        method: 'post',
+        params: {
+          email:this.userEmail,
+          emailTopic:'全国各省疫情现状'
+        }
+      })
+
+      this.send2()
     },
-    async send3(){
+    async send2(){
+      // await this.$http.get('/MQTT/subscribe', 
+      //   {params: 
+      //     { topic:'全国各省疫情现状' }
+      //   }
+      // )
+
+      await axios({
+        url: '/MQTT/subscribe',
+        method: 'get',
+        params: {
+          topic:'全国各省疫情现状'
+        }
+      })
+
       // 这下面是邮件内容的处理
       this.emailInfo="截止2021年11月27号，各省疫情情况如下：\n\n"
       var i
@@ -920,13 +938,28 @@ export default {
       }
       console.log(this.emailInfo)
 
-      await this.$http.post('/MQTT/sendTo', 
-        {params: 
-          { infomation:this.emailInfo,
-            emailTopic:'全国各省疫情现状' }
-        }
-      )
+      this.send3()
+      //this.setTimeout(this.send3(),500);
+    },
+    async send3(){
+      // await this.$http.post('/MQTT/sendTo', 
+      //     { 
+      //       //infomation:this.emailInfo,
+      //       information:'111',
+      //       topic:'全国各省疫情现状'          
+      //   }
+      // )
 
+      await axios({
+        url: '/MQTT/sendTo',
+        method: 'post',
+        params: {
+          information:this.emailInfo,
+          topic:'全国各省疫情现状' 
+        }
+      })
+
+      this.$http.delete('/MQTT/disconnect')
     }
   },
   //转换时间戳
@@ -936,12 +969,17 @@ export default {
     }
   },
   mounted(){
-    this,this.initTable()
+    this.$http.delete('/MQTT/disconnect')
+    this.initTable()
     this.drawCNMap()
     this.drawCNLine()
     this.drawProviGraph()
     this.getNews()
   },
+  destroyed(){
+    this.$http.delete('/MQTT/disconnect')
+    this.$http.delete('/redis/deleteAll')
+  }
 }
 
 </script>
