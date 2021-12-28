@@ -12,7 +12,7 @@ import './assets/css/font.css'
 import './assets/css/global.css'
 import './assets/theme'
 import "./assets/date.less"
-
+// import vueSeamlessScroll from 'vue-seamless-scroll' 
 import 'echarts-gl';
 import '../node_modules/echarts/map/js/world.js' // 引入世界地图
 import '../node_modules/echarts/map/json/province/anhui.json' // 引入世界地图
@@ -68,7 +68,7 @@ Vue.config.productionTip = false
 Vue.prototype.$http=axios
 Vue.use(moment)
 Vue.use(predictData)
-
+// Vue.use(vueSeamlessScroll)
 axios.defaults.baseURL = 'http://101.132.138.14:8082/'
 
 new Vue({
